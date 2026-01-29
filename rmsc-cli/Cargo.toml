@@ -1,0 +1,20 @@
+[package]
+name = "rmsc-cli"
+version = "0.1.0"
+license.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[build-dependencies]
+chrono = "0.4.38"
+
+[dependencies]
+ariadne = { workspace = true }
+dunce = { workspace = true }
+structopt = "0.3.26"
+rmsc-core = { path = "../rmsc-core" }
+
+[[bin]]
+name = "rms-check"
+path = "src/main.rs"
+bench = false

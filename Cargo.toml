@@ -1,0 +1,20 @@
+[workspace]
+members = [
+    "rmsc-cli",
+    "rmsc-core",
+    "rmsc-lsp",
+]
+resolver = "2"
+
+[workspace.package]
+license = "GPL-3"
+version = "0.1.0"
+edition = "2024"
+authors = ["Alian713", "T-West"]
+
+[workspace.dependencies]
+ariadne = "0.4.1"
+dashmap = "7.0.0-rc2"
+dunce = "1.0.5"
+ropey = "1.6.1"
+tower-lsp = "0.20.0"

@@ -1,0 +1,22 @@
+[package]
+name = "rmsc-core"
+version = "0.1.0"
+license.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[features]
+lsp = ["dashmap", "ropey", "tower-lsp"]
+
+[dependencies]
+ariadne = { workspace = true }
+blake3 = "1.7.0"
+chumsky = "=1.0.0-alpha.7"
+dashmap = { workspace = true, optional = true }
+ropey = { workspace = true, optional = true }
+tower-lsp = { workspace = true, optional = true }
+
+[[bin]]
+name = "rms-check-test"
+path = "src/main.rs"
+bench = false
