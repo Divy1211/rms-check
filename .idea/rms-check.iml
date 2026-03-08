@@ -2,6 +2,7 @@
 <module type="EMPTY_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/my-test/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/rmsc-cli/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/rmsc-core/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/rmsc-lsp/src" isTestSource="false" />

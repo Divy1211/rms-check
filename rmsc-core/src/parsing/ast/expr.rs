@@ -1,0 +1,51 @@
+use crate::parsing::ast::identifier::Identifier;
+use crate::parsing::ast::literal::Literal;
+use crate::parsing::Spanned;
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum Expr {
+    Literal(Literal),
+    Identifier(Identifier),
+    Paren(Box<Spanned<Expr>>),
+    Rnd(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
+
+    Neg(Box<Spanned<Expr>>),
+    // Not(Box<Spanned<Expr>>),
+    
+    Star(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
+    FSlash(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
+    PCent(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
+    
+    Plus(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
+    Minus(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
+
+    // Lt(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
+    // Gt(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
+    // Le(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
+    // Ge(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
+    // 
+    // Eq(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
+    // Ne(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
+    // 
+    // And(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
+    // 
+    // Or(Box<Spanned<Expr>>, Box<Spanned<Expr>>),
+}
+
+impl Expr {
+    pub fn lit_str(&self) -> Option<String> {
+        Some(match self {
+            Expr::Literal(lit) => format!("{}", lit),
+            Expr::Identifier(id) => format!("{}", id),
+            Expr::Neg(lit) => {
+                format!("-{}", render(lit))
+            }
+            _ => return None,
+        })
+    }
+}
+
+fn render(v: &Box<Spanned<Expr>>) -> String {
+    let (v, _span) = v.as_ref();
+    v.lit_str().unwrap_or("???".into())
+}
