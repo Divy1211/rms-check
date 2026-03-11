@@ -5,14 +5,14 @@
 - $G$ is a proposition, the current Guard.
 - $L$ is a set of name/guard pairs $(n, g)$ meaning $n$ is live when $g$ is true
 - At a use-site:
-  - $n$ is **definitely-live** if $G \implies g$ for some $(n, g) \in L$
-  - $n$ is **definitely-dead** if $G \implies \neg g$ for some $(n, g) \in L$
-  - $n$ is **maybe-live** if $G \implies g$ or $G \implies \neg g$ cannot be derived.
+    - $n$ is **definitely-live** if $G \implies g$ for some $(n, g) \in L$
+    - $n$ is **definitely-dead** if $G \implies \neg g$ for some $(n, g) \in L$
+    - $n$ is **maybe-live** if $G \implies g$ or $G \implies \neg g$ cannot be derived.
 - Probability:
-  - $P_{k,n}(x)$ is the guard of block $k$ arm $n$. It can be derived if $x \geq 100$.
-  - $P_{k,n}(0) = \bot$ and $P_{k,n}(100) = \top$.
-  - $P_{k,1}(x_1) \lor ... \lor P_{k,n}(x_n) = P_{k,1..n}(\sum_i^n x_i)$
-  - Lemma: $(P_{k,1}(x_1) \land g) \lor (P_{k,2}(x_2) \land g) = g$ iff $x_1 + x_2 \geq 100$
+    - $P_{k,n}(x)$ is the guard of block $k$ arm $n$. It can be derived if $x \geq 100$.
+    - $P_{k,n}(0) = \bot$ and $P_{k,n}(100) = \top$.
+    - $P_{k,1}(x_1) \lor ... \lor P_{k,n}(x_n) = P_{k,1..n}(\sum_i^n x_i)$
+    - Lemma: $(P_{k,1}(x_1) \land g) \lor (P_{k,2}(x_2) \land g) = g$ iff $x_1 + x_2 \geq 100$
 - $L, G \vdash \bar{S} \implies L'$ set $L$ is updated to $L'$ when analysing statements $\bar{S}$ along with the current guard $G$ (read as $L, G$ yield $\bar{S}$ implies $L'$).
 - $$\begin{array}{rc}
   {\tt (rmsLaCase)} & \begin{array}{c}
@@ -132,9 +132,10 @@ end_random
 ```
 
 
-From the two arms of this block we get:
-- $L_1 = \{(A, P_{1,1}(50))\}$
-- $L_2 = \{(A, P_{1,2}(50))\}$
+From the two arms of this block:
+
+  - $L_1 = \{(A, P_{1,1}(50))\}$
+  - $L_2 = \{(A, P_{1,2}(50))\}$
 
 Which join into $L = \{(A, P_{1,1}(50) \lor P_{1,2}(50))\} = \{(A, \top)\}$ 
 
@@ -162,19 +163,23 @@ end_random
 ```
 
 
-From the two arms of the first block we get:
-- $L_1 = \{(A, P_{1,1}(50))\}$
-- $L_2 = \{(B, P_{1,2}(50))\}$
+From the two arms of the first block:
 
-Which join into $L = \{(A, P_1(50)), (B, P_1(50))\}$
+  - $L_1 = \{(A, P_{1,1}(50))\}$
+  - $L_2 = \{(B, P_{1,2}(50))\}$
 
-Then the arms of the subsequent blocks give us:
-- $L_1 = \{({\tt NAME1}, P_{2,1}(50) \land A), ({\tt NAME2}, P_{2,1}(50) \land A)\}$
-- $L_2 = \{({\tt NAME1}, P_{2,2}(50) \land A), ({\tt NAME2}, P_{2,2}(50) \land B)\}$
+Which join into $L = \{(A, P_{1,1}(50)), (B, P_{1,2}(50))\}$
 
-which finally join to give us $L = \{(A, P_1(50)), (B, P_1(50)), ({\tt NAME1}, (P_{2,1}(50) \land A) \lor (P_{2,2}(50) \land A)), ({\tt NAME2}, (P_{2,1}(50) \land A) \lor (P_{2,2}(50) \land B))\}$
+Then from the arms of the subsequent block:
 
-which simplifies to $L = \{(A, P_1(50)), (B, P_1(50)), ({\tt NAME1}, A), ({\tt NAME2}, (P_{2,1}(50) \land A) \lor (P_{2,2}(50) \land B))\}$
+  - $L_1 = \{({\tt NAME1}, P_{2,1}(50) \land A), ({\tt NAME2}, P_{2,1}(50) \land A)\}$
+  - $L_2 = \{({\tt NAME1}, P_{2,2}(50) \land A), ({\tt NAME2}, P_{2,2}(50) \land B)\}$
+
+which finally join to produce
+
+$$L = \{(A, P_{1,1}(50)), (B, P_{1,2}(50)), ({\tt NAME1}, (P_{2,1}(50) \land A) \lor (P_{2,2}(50) \land A)), ({\tt NAME2}, (P_{2,1}(50) \land A) \lor (P_{2,2}(50) \land B))\}$$
+
+which simplifies to $L = \{(A, P_{1,1}(50)), (B, P_{1,2}(50)), ({\tt NAME1}, A), ({\tt NAME2}, (P_{2,1}(50) \land A) \lor (P_{2,2}(50) \land B))\}$
 
 ### 2.6. Section Start
 
