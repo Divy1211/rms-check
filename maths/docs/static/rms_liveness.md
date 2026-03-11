@@ -50,8 +50,7 @@ $$
 \begin{array}{rc}
     {\tt (rmsLaIncDrs)} & \begin{array}{c}
         \begin{array}{ccc}
-            {\tt \#include\_drs\ PATH}
-            & {\tt PATH} \vdash \bar{S}
+            {\tt PATH} \vdash \bar{S}
             & L, G \vdash \bar{S} \implies L'
         \end{array}
         \\ \hline
@@ -66,8 +65,7 @@ $$
 \begin{array}{rc}
     {\tt (rmsLaIncXs)} & \begin{array}{c}
         \begin{array}{ccc}
-            {\tt \#includeXS\ PATH}
-            & {\tt PATH} \vdash \bar{S}
+            {\tt PATH} \vdash \bar{S}
         \end{array}
         \\ \hline
         L, G \vdash {\tt \#includeXS\ PATH} \implies L
@@ -190,10 +188,6 @@ which simplifies to $L = \{(A, P_{1,1}(50)), (B, P_{1,2}(50)), ({\tt NAME1}, A),
 $$
 \begin{array}{rc}
     {\tt (rmsLaSection)} & \begin{array}{c}
-        \begin{array}{ccc}
-            \texttt{$<$SECTION$>$}
-        \end{array}
-        \\ \hline
         L, G \vdash \texttt{$<$SECTION$>$} \implies L
     \end{array}
 \end{array}
@@ -204,10 +198,6 @@ $$
 $$
 \begin{array}{rc}
     {\tt (rmsLaCmd)} & \begin{array}{c}
-        \begin{array}{ccc}
-            {\tt command\ \bar{A}}
-        \end{array}
-        \\ \hline
         L, G \vdash {\tt command\ \bar{A}} \implies L
     \end{array}
 \end{array}
