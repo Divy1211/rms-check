@@ -4,6 +4,8 @@
 
 - $G$ is a proposition, the current Guard.
 - $L$ is a set of name/guard pairs $(n, g)$ meaning $n$ is live when $g$ is true
+- $L[n] = \bot$ if $n \notin L$
+- $L_1 \sqcup L_2 = \{(n, L_1[n] \lor L_2[n])\ \forall\ n \in L_1 \cup L_2\}$ (read as $L_1$ joined with $L_2$)
 - At a use-site:
     - $n$ is **definitely-live** if $G \implies g$ for some $(n, g) \in L$
     - $n$ is **definitely-dead** if $G \implies \neg g$ for some $(n, g) \in L$
@@ -11,7 +13,7 @@
 - Probability:
     - $P_{k,n}(x)$ is the guard of block $k$ arm $n$. It can be derived if $x \geq 100$.
     - $P_{k,n}(0) = \bot$ and $P_{k,n}(100) = \top$.
-    - $P_{k,1}(x_1) \lor ... \lor P_{k,n}(x_n) = P_{k,1..n}(\sum_i^n x_i)$
+    - $P_{k,1}(x_1) \lor ... \lor P_{k,n}(x_n) = P_{k,1..n}(\sum_{i=1}^n x_i)$
     - Lemma: $(P_{k,1}(x_1) \land g) \lor (P_{k,2}(x_2) \land g) = g$ iff $x_1 + x_2 \geq 100$
 - $L, G \vdash \bar{S} \implies L'$ set $L$ is updated to $L'$ when analysing statements $\bar{S}$ along with the current guard $G$ (read as $L, G$ yield $\bar{S}$ implies $L'$).
 - $$\begin{array}{rc}
@@ -80,7 +82,7 @@ Note: including XS files has no effect on the RMS file's namespace
 $$
 \begin{array}{rc}
     {\tt (rmsLaConstDef)} & \begin{array}{c}
-        L, G \vdash {\tt \#const\ NAME\ VALUE} \implies L \oplus ({\tt NAME}, G)
+        L, G \vdash {\tt \#const\ NAME\ VALUE} \implies L \sqcup \{({\tt NAME}, G)\}
     \end{array}
 \end{array}
 $$
@@ -88,7 +90,7 @@ $$
 $$
 \begin{array}{rc}
     {\tt (rmsLaLabelDef)} & \begin{array}{c}
-        L, G \vdash {\tt \#define\ NAME} \implies L \oplus ({\tt NAME}, G)
+        L, G \vdash {\tt \#define\ NAME} \implies L \sqcup \{({\tt NAME}, G)\}
     \end{array}
 \end{array}
 $$
@@ -100,14 +102,16 @@ $$
     {\tt (rmsLaIfElse)} & \begin{array}{c}
         \begin{array}{c}
             L, G \land C_1 \vdash S_1 \implies L_1
-            \\ L, G \land \neg C_1 \land ... \land \neg C_{i-1} \land C_i \vdash S_i \implies L_i
-            \\ L, G \land \neg C_1 \land ... \land \neg C_n \vdash S_e \implies L_e
+            \\ \color{yellow} L, G \land \neg C_1 \land ... \land \neg C_{i-1} \land C_i \vdash S_i \implies L_i
+            \\ \color{orange} L, G \land \neg C_1 \land ... \land \neg C_n \vdash S_e \implies L_e
         \end{array}
         \\ \hline
-        L, G \vdash {\tt if}\ C_1\ \bar{S_1}\ {\tt elseif}\ C_2\ \bar{S_2}\ ... \ {\tt elseif}\ C_n\ \bar{S_n}\ {\tt else}\ \bar{S_e} \implies L\ \cup\ \{(n, g_1 \lor ... \lor g_k)\ |\ \forall\ i, (n, g_i) \in L_i \backslash L \}
+        L, G \vdash {\tt if}\ C_1\ \bar{S_1}\ {\color{yellow}{\tt elseif}\ C_2\ \bar{S_2}\ ... \ {\tt elseif}\ C_n\ \bar{S_n}}\ {\color{orange}{\tt else}\ \bar{S_e}} \implies L\ \sqcup \bigsqcup_i\ L_i
     \end{array}
 \end{array}
 $$
+
+Note: the elseif and else branches in an if are optional, and may be skipped. In that case, $S_i = \epsilon$ 
 
 ### 2.5. Random
 
@@ -118,7 +122,7 @@ $$
             L, G \land P(p_i) \vdash S_i \implies L_i\
         \end{array}
         \\ \hline
-        L, G \vdash {\tt start\_random}\ {\tt percent\_chance\ p_1}\ \bar{S_1}\ ...\ {\tt percent\_chance\ p_n}\ \bar{S_n}\ {\tt end\_random} \implies L\ \cup\ \{(n, g_1 \lor ... \lor g_k)\ |\ \forall\ i, (n, g_i) \in L_i \backslash L \}
+        L, G \vdash {\tt start\_random}\ {\tt percent\_chance\ p_1}\ \bar{S_1}\ ...\ {\tt percent\_chance\ p_n}\ \bar{S_n}\ {\tt end\_random} \implies L\ \sqcup \bigsqcup_i\ L_i
 \end{array}
 \end{array}
 $$
