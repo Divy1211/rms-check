@@ -5,6 +5,7 @@ use std::fmt::Formatter;
 pub enum Type {
     Int,
     Float,
+    Label,
 }
 
 impl Display for Type {
@@ -12,6 +13,7 @@ impl Display for Type {
         match self {
             Type::Int => write!(f, "int"),
             Type::Float => write!(f, "float"),
+            Type::Label => write!(f, "label"),
         }
     }
 }
