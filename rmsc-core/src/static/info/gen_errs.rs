@@ -9,7 +9,7 @@ use chumsky::Parser;
 use crate::parsing::{lexer, Token};
 use crate::parsing::parser;
 use crate::r#static::info::{AstCacheRef, Error, ParseError, SrcCacheRef, TypeEnv};
-use crate::r#static::type_check::xs_tc;
+use crate::r#static::type_check::rms_tc;
 use crate::utils::{pop};
 
 pub fn gen_errs_from_path(
@@ -65,7 +65,7 @@ pub fn gen_errs_from_src(
         };
         ast_cache.insert(path.clone(), (None, (vec![], vec![])));
         if hash == prev_hash {
-            let r = xs_tc(path, &ast, type_env, ast_cache, src_cache, &comments);
+            let r = rms_tc(path, &ast, type_env, ast_cache, src_cache, &comments);
             ast_cache.insert(path.clone(), (Some(hash), (ast, comments)));
             return r
         }
@@ -106,7 +106,7 @@ pub fn gen_errs_from_src(
     };
 
     ast_cache.insert(path.clone(), (None, (vec![], vec![])));
-    let r = xs_tc(path, &ast, type_env, ast_cache, src_cache, &comments);
+    let r = rms_tc(path, &ast, type_env, ast_cache, src_cache, &comments);
     ast_cache.insert(path.clone(), (Some(hash), (ast, comments)));
     r
 }

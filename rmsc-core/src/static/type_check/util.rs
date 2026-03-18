@@ -4,7 +4,7 @@ use chumsky::container::{Container};
 
 use crate::parsing::{Expr, Type};
 use crate::parsing::{Span, Spanned};
-use crate::r#static::type_check::expression::xs_tc_expr;
+use crate::r#static::type_check::expression::rms_tc_expr;
 use crate::r#static::info::{RmsError, TypeEnv};
 
 pub fn combine_results<T>(results: impl IntoIterator<Item = Result<(), Vec<T>>>) -> Result<(), Vec<T>>  {
@@ -38,7 +38,7 @@ pub fn arith_op(
     // no error is returned specifically because if None is returned, an error will have
     // been generated already
     let (Some(type1), Some(type2)) = (
-        xs_tc_expr(path, expr1, type_env), xs_tc_expr(path, expr2, type_env)
+        rms_tc_expr(path, expr1, type_env), rms_tc_expr(path, expr2, type_env)
     ) else {
         return None;
     };

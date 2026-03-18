@@ -26,15 +26,3 @@ Note: GitHub does not render all the latex correctly, read these docs here: http
 | Parsing          | [RMS Tokens](maths/docs/parsing/rms_tokens.md)             |
 | Parsing          | [RMS Grammar](maths/docs/parsing/rms_grammar.md)           |
 | Static Analysis  | [RMS Liveness Analysis](maths/docs/static/rms_liveness.md) |
-
-[//]: # (| Code Generation  | [IR to Byte Code]&#40;maths/docs/code_gen/xs_bc.md&#41;             |)
-
-[//]: # (| Runtime          | [XS Virtual Machine]&#40;maths/docs/xs_vm/xs_rt.md&#41;             |)
-
-[//]: # (| Byte Code        | [XS Virtual Machine]&#40;maths/docs/xs_vm/xs_ops.md&#41;            |)
-
-[//]: # (| Static Analysis  | [XS Type Inference]&#40;./maths/static/xs_type_inf.md&#41;       |)
-
-[//]: # (| Static Analysis  | [XS Sign Analysis]&#40;./maths/static/xs_sign.md&#41;            |)
-
-[//]: # (| Static Analysis  | [XS Liveness Analysis]&#40;./maths/static/xs_liveness.md&#41;    |)

@@ -6,7 +6,7 @@ use crate::r#static::info::{IdInfo, TypeEnv, RmsError};
 
 use crate::r#static::type_check::util::{arith_op};
 
-pub fn xs_tc_expr(
+pub fn rms_tc_expr(
     path: &PathBuf,
     (expr, span): &Spanned<Expr>,
     type_env: &mut TypeEnv,
@@ -24,7 +24,7 @@ pub fn xs_tc_expr(
         };
         Some(type_)
     }
-    Expr::Paren(expr) => { xs_tc_expr(path, expr, type_env) }
+    Expr::Paren(expr) => { rms_tc_expr(path, expr, type_env) }
     Expr::Neg(expr) => {
         let (_, inner_span): &Spanned<Expr> = expr;
         
@@ -36,7 +36,7 @@ pub fn xs_tc_expr(
             ))
         }
 
-        xs_tc_expr(path, expr, type_env)
+        rms_tc_expr(path, expr, type_env)
     }
 
     Expr::Star(expr1, expr2) => {

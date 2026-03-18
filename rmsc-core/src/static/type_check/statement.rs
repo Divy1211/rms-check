@@ -15,11 +15,11 @@ use crate::r#static::info::{
     WarningKind,
     RmsError,
 };
-use crate::r#static::type_check::expression::xs_tc_expr;
+use crate::r#static::type_check::expression::rms_tc_expr;
 use crate::r#static::type_check::util::{combine_results};
 
 #[allow(clippy::too_many_arguments)]
-pub fn xs_tc_stmt(
+pub fn rms_tc_stmt(
     path: &PathBuf,
     (stmt, span): &Spanned<AstNode>,
     type_env: &mut TypeEnv,

@@ -4,4 +4,4 @@ mod statement;
 mod statements;
 mod propositions;
 
-pub use statements::{xs_tc};
+pub use statements::{rms_tc};

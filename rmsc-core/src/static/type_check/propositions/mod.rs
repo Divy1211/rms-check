@@ -2,8 +2,8 @@ mod symbol;
 mod prop;
 mod guard;
 
-use prop::Prop;
-use guard::Guard;
+pub use prop::Prop;
+pub use guard::Guard;
 
 mod test {
     use super::*;
