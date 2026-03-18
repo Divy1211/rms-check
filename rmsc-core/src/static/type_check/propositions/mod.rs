@@ -78,9 +78,10 @@ mod test {
     #[test]
     fn test_simplify_random_or() {
         let a = Prop::from_name("A");
+        let b = Prop::from_name("B");
         let p11 = Prop::from_block(1, 1, 50);
         let p12 = Prop::from_block(1, 2, 50);
-        let prop = a.clone() & p11 | a & p12;
+        let prop = a.clone() & p11 | a & p12 | b;
         let mut G = Guard::new();
         G.mk_true("A");
 
