@@ -6,6 +6,7 @@ pub enum Type {
     Int,
     Float,
     Label,
+    String,
 }
 
 impl Display for Type {
@@ -14,6 +15,7 @@ impl Display for Type {
             Type::Int => write!(f, "int"),
             Type::Float => write!(f, "float"),
             Type::Label => write!(f, "label"),
+            Type::String => write!(f, "string"),
         }
     }
 }

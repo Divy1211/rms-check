@@ -5,7 +5,6 @@ use std::hash::{Hash, Hasher};
 pub enum Literal {
     Int(i64),
     Float(f64),
-    Bool(bool),
     Str(String),
 }
 
@@ -14,7 +13,6 @@ impl PartialEq for Literal {
         match (self, other) {
             (Literal::Int(val1), Literal::Int(val2))     => val1 == val2,
             (Literal::Float(val1), Literal::Float(val2)) => val1 == val2,
-            (Literal::Bool(val1), Literal::Bool(val2))   => val1 == val2,
             (Literal::Str(val1), Literal::Str(val2))     => val1 == val2,
             _                                            => false
         }
@@ -28,7 +26,6 @@ impl Hash for Literal {
         match self {
             Literal::Int(val)   => val.hash(state),
             Literal::Float(val) => format!("π{:}Σ", val).hash(state),
-            Literal::Bool(val)  => val.hash(state),
             Literal::Str(val)   => val.hash(state),
         }
         let _ = state.finish();
@@ -40,7 +37,6 @@ impl Display for Literal {
         match self {
             Literal::Int(v) => { write!(f, "{}", v) }
             Literal::Float(v) => { write!(f, "{}", v) }
-            Literal::Bool(v) => { write!(f, "{}", v) }
             Literal::Str(v) => { write!(f, "{}", v) }
         }
     }
