@@ -15,5 +15,12 @@ fn main() {
 
     gen_errs_from_path(&path, &mut type_env, &mut ast_cache, &mut src_cache).unwrap();
 
-    println!("{:#?}", type_env);
+    println!("is_live A: {:#?}", type_env.check_live(&Identifier::new("A")));
+    println!("is_live B: {:#?}", type_env.check_live(&Identifier::new("B")));
+    println!("is_live C: {:#?}", type_env.check_live(&Identifier::new("C")));
+    println!("is_live D: {:#?}", type_env.check_live(&Identifier::new("D")));
+    println!("is_live E: {:#?}", type_env.check_live(&Identifier::new("E")));
+    println!("is_live F: {:#?}", type_env.check_live(&Identifier::new("F")));
+
+    // println!("{:#?}", type_env);
 }

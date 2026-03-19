@@ -4,16 +4,26 @@ use std::path::PathBuf;
 use std::sync::{Arc, RwLock, RwLockReadGuard};
 use chumsky::container::{Container};
 
-use crate::parsing::{Identifier, Type};
+use crate::parsing::{Identifier};
 use crate::r#static::info::id_info::IdInfo;
 use crate::r#static::info::rms_error::RmsError;
-use crate::r#static::type_check::propositions::{Guard, Prop};
+use crate::r#static::type_check::propositions::{Guard, Prop, Symbol};
 
 #[derive(Debug, Clone)]
 pub enum Liveness {
     Live,
     Dead,
     Maybe,
+}
+
+impl Liveness {
+    pub fn not(self) -> Liveness {
+        match self {
+            Liveness::Live => Liveness::Dead,
+            Liveness::Dead => Liveness::Live,
+            Liveness::Maybe => Liveness::Maybe,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -65,15 +75,15 @@ impl TypeEnv {
         self.guard.read().expect("Not concurrent")
     }
 
-    pub fn in_arm(&mut self, arm: u32, chance: u32) {
+    pub fn in_arm(&self, arm: u32, chance: u32) {
         self.guard.write().expect("Not concurrent").in_arm(self.last_block, arm, chance);
     }
 
-    pub fn truthify(&mut self, v: &str) {
-        self.guard.write().expect("Not concurrent").truthify(v);
+    pub fn truthify(&self, v: &str) {
+        self.guard.write().expect("Not concurrent").truthify(self.last_block, v);
     }
-    pub fn falsify(&mut self, v: &str) {
-        self.guard.write().expect("Not concurrent").falsify(v);
+    pub fn falsify(&self, v: &str) {
+        self.guard.write().expect("Not concurrent").falsify(self.last_block, v);
     }
     
     pub fn errs(&self) -> &HashMap<PathBuf, Vec<RmsError>> {
@@ -156,12 +166,21 @@ impl TypeEnv {
     }
 
     pub fn check_live(&mut self, id: &Identifier) -> Liveness {
-        let guard = self.guard();
+        let _nested = self.nested_guard();
+        for (var, info) in &self.identifiers {
+            match info.guard {
+                Prop::True => self.truthify(&var.0),
+                Prop::False => self.falsify(&var.0),
+                _ => {},
+            }
+        }
+
+        let guard = self.guard.clone();
         let Some(info) = self.identifiers.get(id) else {
             return Liveness::Dead;
         };
 
-        match info.guard.simplify(&guard) {
+        match info.guard.simplify(&guard.read().expect("Not concurrent")) {
             Prop::True => Liveness::Live,
             Prop::False => Liveness::Dead,
             _ => Liveness::Maybe,

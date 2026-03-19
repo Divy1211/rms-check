@@ -2,6 +2,7 @@ mod symbol;
 mod prop;
 mod guard;
 
+pub use symbol::Symbol;
 pub use prop::Prop;
 pub use guard::Guard;
 
@@ -70,7 +71,7 @@ mod test {
         let b = Prop::from_name("B");
         let prop = a.clone() & b.clone() | a & !b;
         let mut G = Guard::new();
-        G.truthify("A");
+        G.truthify(0, "A");
 
         assert_eq!(prop.simplify(&G), Prop::True);
     }
@@ -83,7 +84,7 @@ mod test {
         let p12 = Prop::from_block(1, 2, 50);
         let prop = a.clone() & p11 | a & p12 | b;
         let mut G = Guard::new();
-        G.truthify("A");
+        G.truthify(0, "A");
 
         assert_eq!(prop.simplify(&G), Prop::True);
     }

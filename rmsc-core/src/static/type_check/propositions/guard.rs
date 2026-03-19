@@ -1,20 +1,20 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use crate::parsing::Identifier;
-use crate::r#static::type_check::propositions::prop::Prop;
+use crate::r#static::type_check::propositions::prop::{Prop, Simplifiable};
 use crate::r#static::type_check::propositions::symbol::Symbol;
 
 #[derive(Debug, Clone)]
 pub struct Guard {
-    truthy: HashSet<Symbol>,
-    falsy: HashSet<Symbol>,
+    truthy: HashMap<Symbol, HashSet<u32>>,
+    falsy: HashMap<Symbol, HashSet<u32>>,
     block_arm: Option<(u32, u32, u32)>,
 }
 
 impl Guard {
     pub fn new() -> Self {
         Self {
-            truthy: HashSet::new(),
-            falsy: HashSet::new(),
+            truthy: HashMap::new(),
+            falsy: HashMap::new(),
             block_arm: None,
         }
     }
@@ -23,21 +23,30 @@ impl Guard {
         self.block_arm = Some((block, arm, chance));
     }
 
-    pub fn remove(&mut self, v: &str) {
-        self.truthy.remove(&(v.into()));
-        self.falsy.remove(&(v.into()));
+    pub fn truthify(&mut self, block: u32, v: &str) {
+        let key = Symbol::from(v);
+        let truthy =self.truthy.entry(key.clone()).or_insert_with(|| HashSet::new());
+        truthy.insert(block);
+
+        if let Some(falsy) = self.falsy.get_mut(&key) {
+        falsy.remove(&block);
+            if falsy.is_empty() {
+                self.falsy.remove(&key);
+            }
+        }
     }
 
-    pub fn truthify(&mut self, v: &str) {
-        let v = v.into();
-        self.falsy.remove(&v);
-        self.truthy.insert(v);
-    }
+    pub fn falsify(&mut self, block: u32, v: &str) {
+        let key = Symbol::from(v);
+        let falsy =self.falsy.entry(key.clone()).or_insert_with(|| HashSet::new());
+        falsy.insert(block);
 
-    pub fn falsify(&mut self, v: &str) {
-        let v = v.into();
-        self.truthy.remove(&v);
-        self.falsy.insert(v);
+        if let Some(truthy) = self.truthy.get_mut(&key) {
+            truthy.remove(&block);
+            if truthy.is_empty() {
+                self.truthy.remove(&key);
+            }
+        }
     }
 
     pub fn lookup(&self, v: &Symbol) -> Prop {
@@ -51,10 +60,10 @@ impl Guard {
             }
             _ => {}
         }
-        if self.truthy.contains(v) {
+        if self.truthy.contains_key(v) {
             return Prop::True;
         }
-        if self.falsy.contains(v) {
+        if self.falsy.contains_key(v) {
             return Prop::False;
         }
         Prop::Var(v.clone())
@@ -62,22 +71,16 @@ impl Guard {
 
     pub fn get_prop(&self) -> Prop {
         let mut et = Vec::with_capacity(self.truthy.len() + self.falsy.len());
-        for var in &self.truthy {
+        for (var, blocks) in &self.truthy {
             et.push(Prop::Var(var.clone()))
         }
-        for var in &self.falsy {
+        for (var, blocks) in &self.falsy {
             et.push(Prop::Not(var.clone()))
         }
         if let Some((block, arm, chance)) = self.block_arm {
             et.push(Prop::from_block(block, arm, chance));
         }
 
-        if et.is_empty() {
-            return Prop::True;
-        } else if et.len() == 1 {
-            return et.into_iter().next().unwrap();
-        }
-
-        Prop::And(et)
+        et.simplify_and()
     }
 }

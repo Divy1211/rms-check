@@ -1,9 +1,22 @@
 start_random
-    percent_chance 25 #define A
-    percent_chance 25 #define A
+    percent_chance 50 #define A
+    percent_chance 50 #define A
 end_random
 
 start_random
     percent_chance 50 #define B
     percent_chance 50 #define C
 end_random
+
+start_random
+    percent_chance 25 #define D
+    percent_chance 25 #define D
+end_random
+
+if A
+    #define E
+else
+    if A
+        #define F
+    endif
+endif

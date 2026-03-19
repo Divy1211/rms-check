@@ -126,7 +126,7 @@ impl Prop {
     }
 }
 
-trait Simplifiable {
+pub trait Simplifiable {
     fn simplify_and(self) -> Prop;
     fn simplify_or(self) -> Prop;
 }
