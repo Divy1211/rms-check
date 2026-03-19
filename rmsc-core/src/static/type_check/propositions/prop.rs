@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use std::ops::{BitAnd, BitOr, Not};
+use crate::parsing::Identifier;
 use crate::r#static::type_check::propositions::guard::Guard;
 use crate::r#static::type_check::propositions::symbol::Symbol;
 
@@ -20,7 +21,7 @@ impl Not for Prop {
     fn not(self) -> Prop {
         match self {
             Prop::True => Prop::False,
-            Prop::False => Prop::False,
+            Prop::False => Prop::True,
             Prop::Var(s) => Prop::Not(s.clone()),
             Prop::Not(s) => Prop::Var(s.clone()),
             p => unreachable!("Internal Error: Not over compound proposition {:?}", p),
@@ -82,6 +83,10 @@ impl Prop {
         Prop::Var(Symbol::from_name(name))
     }
 
+    pub fn from_id(id: &Identifier) -> Prop {
+        Prop::Var(Symbol::from_name(&id.0))
+    }
+
     pub fn from_block(block: u32, arm: u32, chance: u32) -> Self {
         Prop::Var(Symbol::from_block(block, arm, chance))
     }
@@ -89,14 +94,16 @@ impl Prop {
     pub fn simplify(&self, guard: &Guard) -> Prop {
         match self {
             Prop::True | Prop::False => self.clone(),
-            Prop::Var(v) => guard.lookup(v),
+            Prop::Var(v) => {
+                guard.lookup(v)
+            },
             Prop::And(xs) => 'et: {
                 let mut et = Vec::with_capacity(xs.len());
                 for x in xs {
                     match x.simplify(guard) {
                         Prop::True => continue,
                         Prop::False => break 'et Prop::False,
-                        v => { et.push(v); } /* A.A = A */
+                        v => { et.push(v); }
                     }
                 }
                 et.simplify_and()
@@ -107,13 +114,13 @@ impl Prop {
                     match x.simplify(guard) {
                         Prop::False => continue,
                         Prop::True => break 'vel Prop::True,
-                        v => { vel.push(v); }, /* A + A = A */
+                        v => { vel.push(v); }
                     }
                 }
                 vel.simplify_or()
             }
-            Prop::Not(x) => {
-                guard.lookup(x).not()
+            Prop::Not(v) => {
+                guard.lookup(v).not()
             }
         }
     }
@@ -126,9 +133,12 @@ trait Simplifiable {
 
 impl Simplifiable for Vec<Prop> {
     fn simplify_and(mut self) -> Prop {
+        /* A.A = A */
         self = self.into_iter().collect::<HashSet<_>>().into_iter().collect::<Vec<_>>();
 
-        if self.len() == 1 {
+        if self.is_empty() {
+            return Prop::True;
+        } else if self.len() == 1 {
             return self.into_iter().next().unwrap();
         }
 
@@ -163,9 +173,12 @@ impl Simplifiable for Vec<Prop> {
     }
 
     fn simplify_or(mut self) -> Prop {
+        /* A + A = A */
         self = self.into_iter().collect::<HashSet<_>>().into_iter().collect::<Vec<_>>();
 
-        if self.len() == 1 {
+        if self.is_empty() {
+            return Prop::True
+        } else if self.len() == 1 {
             return self.into_iter().next().unwrap();
         }
 

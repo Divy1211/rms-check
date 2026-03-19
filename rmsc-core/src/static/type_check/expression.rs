@@ -13,9 +13,9 @@ pub fn rms_tc_expr(
 ) -> Option<Type> { match expr {
     Expr::Rnd(_ ,_) => Some(Type::Int),
     Expr::Literal(lit) => match lit {
-        Literal::Int(val) => Some(Type::Int),
+        Literal::Int(_) => Some(Type::Int),
         Literal::Float(_) => Some(Type::Float),
-        Literal::Str(_) => Some(Type::String),
+        Literal::Str(_) => None,
     }
     Expr::Identifier(id) => {
         let Some(IdInfo { type_, ..}) = type_env.get(id) else {

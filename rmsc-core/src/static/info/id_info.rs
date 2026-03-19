@@ -1,23 +1,22 @@
+use std::mem;
 use crate::parsing::{Expr, Type};
 use crate::r#static::info::src_loc::SrcLoc;
+use crate::r#static::type_check::propositions::{Guard, Prop};
 
 #[derive(Debug, Clone)]
 pub struct IdInfo {
     pub type_: Type,
     pub src_loc: SrcLoc,
-    pub init: Option<Expr>,
+    pub guard: Prop,
 }
 
 impl IdInfo {
-    pub fn from(type_: &Type, src_loc: SrcLoc) -> Self {
-        Self { type_: type_.clone(), init: None, src_loc }
+    pub fn from(type_: &Type, src_loc: SrcLoc, guard: &Guard) -> Self {
+        Self { type_: type_.clone(), src_loc, guard: guard.get_prop() }
     }
 
-    pub fn new(type_: Type, src_loc: SrcLoc) -> Self {
-        Self { type_, init: None, src_loc }
-    }
-    
-    pub fn dummy(type_: Type) -> Self {
-        Self { type_, init: None, src_loc: Default::default() }
+    pub fn join(&mut self, guard: &Guard) {
+        let current = mem::replace(&mut self.guard, Prop::False);
+        self.guard = current | guard.get_prop()
     }
 }

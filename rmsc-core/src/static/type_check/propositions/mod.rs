@@ -70,7 +70,7 @@ mod test {
         let b = Prop::from_name("B");
         let prop = a.clone() & b.clone() | a & !b;
         let mut G = Guard::new();
-        G.mk_true("A");
+        G.truthify("A");
 
         assert_eq!(prop.simplify(&G), Prop::True);
     }
@@ -83,7 +83,7 @@ mod test {
         let p12 = Prop::from_block(1, 2, 50);
         let prop = a.clone() & p11 | a & p12 | b;
         let mut G = Guard::new();
-        G.mk_true("A");
+        G.truthify("A");
 
         assert_eq!(prop.simplify(&G), Prop::True);
     }

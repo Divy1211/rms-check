@@ -1,22 +1,33 @@
+use std::any::Any;
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
-use std::sync::{Arc, RwLock};
+use std::sync::{Arc, RwLock, RwLockReadGuard};
 use chumsky::container::{Container};
 
-use crate::parsing::{Identifier};
+use crate::parsing::{Identifier, Type};
 use crate::r#static::info::id_info::IdInfo;
 use crate::r#static::info::rms_error::RmsError;
+use crate::r#static::type_check::propositions::{Guard, Prop};
+
+#[derive(Debug, Clone)]
+pub enum Liveness {
+    Live,
+    Dead,
+    Maybe,
+}
 
 #[derive(Debug, Clone)]
 pub struct TypeEnv {
     pub identifiers: HashMap<Identifier, IdInfo>,
-    
+    pub guard: Arc<RwLock<Guard>>,
     pub errs: HashMap<PathBuf, Vec<RmsError>>,
     
     pub current_ignores: Arc<RwLock<Option<HashSet<u32>>>>,
     
     pub include_dirs: Arc<Vec<PathBuf>>,
     pub dependencies: Option<HashMap<PathBuf, HashSet<PathBuf>>>,
+
+    pub last_block: u32
 }
 
 pub struct TempIgnore {
@@ -29,7 +40,41 @@ impl Drop for TempIgnore {
     }
 }
 
+pub struct NestedGuard {
+    prev_guard: Option<Guard>,
+    guard: Arc<RwLock<Guard>>,
+}
+
+impl Drop for NestedGuard {
+    fn drop(&mut self) {
+        *self.guard.write().expect("Not concurrent") = self.prev_guard.take()
+            .expect("Internal Error: No previous guard");
+    }
+}
+
 impl TypeEnv {
+    pub fn nested_guard(&mut self) -> NestedGuard {
+        self.last_block += 1;
+        NestedGuard {
+            prev_guard: Some(self.guard.read().expect("Not concurrent").clone()),
+            guard: self.guard.clone(),
+        }
+    }
+
+    pub fn guard(&self) -> RwLockReadGuard<'_, Guard> {
+        self.guard.read().expect("Not concurrent")
+    }
+
+    pub fn in_arm(&mut self, arm: u32, chance: u32) {
+        self.guard.write().expect("Not concurrent").in_arm(self.last_block, arm, chance);
+    }
+
+    pub fn truthify(&mut self, v: &str) {
+        self.guard.write().expect("Not concurrent").truthify(v);
+    }
+    pub fn falsify(&mut self, v: &str) {
+        self.guard.write().expect("Not concurrent").falsify(v);
+    }
     
     pub fn errs(&self) -> &HashMap<PathBuf, Vec<RmsError>> {
         &self.errs
@@ -38,12 +83,15 @@ impl TypeEnv {
     pub fn new(include_dirs: Vec<PathBuf>) -> Self {
         Self {
             identifiers: HashMap::new(),
+            guard: Arc::new(RwLock::new(Guard::new())),
             errs: HashMap::new(),
 
             include_dirs: Arc::new(include_dirs),
             dependencies: Some(HashMap::new()),
 
             current_ignores: Arc::new(RwLock::new(None)),
+
+            last_block: 0,
         }
     }
 
@@ -105,5 +153,18 @@ impl TypeEnv {
             .entry(path.clone())
             .or_insert(vec![])
             .extend(errs);
+    }
+
+    pub fn check_live(&mut self, id: &Identifier) -> Liveness {
+        let guard = self.guard();
+        let Some(info) = self.identifiers.get(id) else {
+            return Liveness::Dead;
+        };
+
+        match info.guard.simplify(&guard) {
+            Prop::True => Liveness::Live,
+            Prop::False => Liveness::Dead,
+            _ => Liveness::Maybe,
+        }
     }
 }
