@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use crate::parsing::{Expr, Literal, Type};
 use crate::parsing::Spanned;
-use crate::r#static::info::{IdInfo, TypeEnv, RmsError};
+use crate::r#static::info::{IdInfo, TypeEnv, RmsError, Liveness};
 
 use crate::r#static::type_check::util::{arith_op};
 
@@ -22,6 +22,15 @@ pub fn rms_tc_expr(
             type_env.add_err(path, RmsError::undefined_name(id, span));
             return None;
         };
+        match type_env.check_live(id) {
+            Liveness::Live => {}
+            Liveness::Dead => {
+                type_env.add_err(path, RmsError::dead_name(id, span));
+            }
+            Liveness::Maybe => {
+                type_env.add_err(path, RmsError::maybe_dead_name(id, span));
+            }
+        }
         Some(type_)
     }
     Expr::Paren(expr) => { rms_tc_expr(path, expr, type_env) }

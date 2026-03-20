@@ -210,8 +210,53 @@ pub fn rms_tc_stmt(
 
             combine_results(results)
         },
-        AstNode::SectionStart(_) => todo!(),
-        AstNode::Command { .. } => todo!(),
-        AstNode::Block(_) => todo!(),
+        AstNode::SectionStart((name, span)) => {
+            match name.0.as_str() {
+                "PLAYER_SETUP"
+                | "LAND_GENERATION"
+                | "ELEVATION_GENERATION"
+                | "CLIFF_GENERATION"
+                | "TERRAIN_GENERATION"
+                | "CONNECTION_GENERATION"
+                | "OBJECTS_GENERATION" => {}
+                section => {
+                    type_env.add_err(path, RmsError::syntax(
+                        span,
+                        "Unrecognized script section <{}>",
+                        vec![section],
+                    ));
+                }
+            }
+            Ok(())
+        },
+        AstNode::Command {name: (_name, _span), params} => {
+            for param in params {
+                let Some(type_) = rms_tc_expr(path, param, type_env) else {
+                    return Ok(());
+                };
+                match type_ {
+                    Type::Int | Type::Float => {},
+                    Type::Label | Type::Str => {
+                        type_env.add_err(path, RmsError::type_mismatch(
+                            &type_.to_string(),
+                            "int | float",
+                            &param.1,
+                            None,
+                        ));
+                    },
+                }
+            }
+            Ok(())
+        },
+        AstNode::Block((body, _span)) => {
+            let mut results = Vec::with_capacity(body.len());
+            for stmt in body {
+                results.push(rms_tc_stmt(
+                    path, stmt, type_env, ast_cache, src_cache, comments, comment_pos,
+                    false
+                ));
+            }
+            combine_results(results)
+        },
     }
 }

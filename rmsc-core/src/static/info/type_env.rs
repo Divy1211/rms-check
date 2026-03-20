@@ -1,4 +1,3 @@
-use std::any::Any;
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock, RwLockReadGuard};
@@ -65,6 +64,10 @@ impl Drop for NestedGuard {
 impl TypeEnv {
     pub fn nested_guard(&mut self) -> NestedGuard {
         self.last_block += 1;
+        self.nested_guard_no_block()
+    }
+
+    fn nested_guard_no_block(&self) -> NestedGuard {
         NestedGuard {
             prev_guard: Some(self.guard.read().expect("Not concurrent").clone()),
             guard: self.guard.clone(),
@@ -166,7 +169,15 @@ impl TypeEnv {
     }
 
     pub fn check_live(&mut self, id: &Identifier) -> Liveness {
-        let _nested = self.nested_guard();
+        self.check_live_rec(id, &mut HashSet::new())
+    }
+
+    fn check_live_rec(&mut self, id: &Identifier, seen: &mut HashSet<Identifier>) -> Liveness {
+        let Some(info) = self.identifiers.get(id) else {
+            return Liveness::Dead;
+        };
+
+        let _nested = self.nested_guard_no_block();
         for (var, info) in &self.identifiers {
             match info.guard {
                 Prop::True => self.truthify(&var.0),
@@ -175,14 +186,35 @@ impl TypeEnv {
             }
         }
 
-        let guard = self.guard.clone();
-        let Some(info) = self.identifiers.get(id) else {
-            return Liveness::Dead;
-        };
-
-        match info.guard.simplify(&guard.read().expect("Not concurrent")) {
+        let guard_ref = self.guard.clone();
+        let guard = guard_ref.read().expect("Not concurrent");
+        let prop = info.guard.simplify(&guard);
+        drop(guard);
+        match prop {
             Prop::True => Liveness::Live,
             Prop::False => Liveness::Dead,
+            Prop::Var(sym) => match sym {
+                Symbol::Name(id) => {
+                    if seen.contains(&id) {
+                        Liveness::Dead
+                    } else {
+                        seen.insert(id.clone());
+                        self.check_live_rec(&id, seen)
+                    }
+                },
+                Symbol::Random { .. } => Liveness::Maybe
+            },
+            Prop::Not(sym) => match sym {
+                Symbol::Name(id) => {
+                    if seen.contains(&id) {
+                        Liveness::Dead
+                    } else {
+                        seen.insert(id.clone());
+                        self.check_live_rec(&id, seen).not()
+                    }
+                },
+                Symbol::Random { .. } => Liveness::Maybe
+            }
             _ => Liveness::Maybe,
         }
     }

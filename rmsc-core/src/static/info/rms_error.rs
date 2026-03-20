@@ -14,8 +14,10 @@ pub enum RmsError {
 
     // name errors
     UndefinedName { name: String, span: Span },
-    RedefinedName { name: String, span: Span, og_src_loc: SrcLoc, note: Option<String> },
-
+    DeadName { name: String, span: Span },
+    MaybeDeadName { name: String, span: Span },
+    
+    
     UnresolvedInclude { inc_filename: String, span: Span },
     
     Syntax { span: Span, msg: String, keywords: Vec<String> },
@@ -81,12 +83,17 @@ impl RmsError {
         }
     }
 
-    pub fn redefined_name(name: &Identifier, span: &Span, og_src_loc: &SrcLoc, note: Option<&str>) -> RmsError {
-        RmsError::RedefinedName {
+    pub fn dead_name(name: &Identifier, span: &Span) -> RmsError {
+        RmsError::DeadName {
             name: String::from(&name.0),
             span: *span,
-            og_src_loc: og_src_loc.clone(),
-            note: note.map(String::from),
+        }
+    }
+
+    pub fn maybe_dead_name(name: &Identifier, span: &Span) -> RmsError {
+        RmsError::MaybeDeadName {
+            name: String::from(&name.0),
+            span: *span,
         }
     }
 
@@ -122,7 +129,8 @@ impl RmsError {
             RmsError::NotCallable { span, .. } => { span }
             RmsError::OpMismatch { span, .. } => { span }
             RmsError::UndefinedName { span, .. } => { span }
-            RmsError::RedefinedName { span, .. } => { span }
+            RmsError::DeadName { span, .. } => { span }
+            RmsError::MaybeDeadName { span, .. } => { span }
             RmsError::UnresolvedInclude { span, .. } => { span }
             RmsError::Syntax { span, .. } => { span }
             RmsError::Warning { span, .. } => { span }
@@ -144,7 +152,8 @@ impl RmsError {
             RmsError::OpMismatch { .. } => { "TypeError" }
 
             RmsError::UndefinedName { .. } => { "NameError" }
-            RmsError::RedefinedName { .. } => { "NameError" }
+            RmsError::DeadName { .. } => { "NameError" }
+            RmsError::MaybeDeadName { .. } => { "NameError" }
 
             RmsError::UnresolvedInclude { .. } => { "UnresolvedInclude" }
             
@@ -172,9 +181,10 @@ impl RmsError {
             RmsError::NotCallable { .. } => { 2 }
             RmsError::OpMismatch { .. } => { 3 }
             RmsError::UndefinedName { .. } => { 4 }
-            RmsError::RedefinedName { .. } => { 5 }
-            RmsError::UnresolvedInclude { .. } => { 6 }
-            RmsError::Syntax { .. } => { 7 }
+            RmsError::DeadName { .. } => { 5 }
+            RmsError::MaybeDeadName { .. } => { 6 }
+            RmsError::UnresolvedInclude { .. } => { 7 }
+            RmsError::Syntax { .. } => { 8 }
             RmsError::Warning { kind, .. } => { kind.as_u32() }
         }
     }

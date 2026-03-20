@@ -10,7 +10,7 @@ mod types;
 
 pub use id_info::IdInfo;
 pub use src_loc::SrcLoc;
-pub use type_env::TypeEnv;
+pub use type_env::{TypeEnv, Liveness};
 pub use rms_error::{WarningKind, RmsError};
 pub use error::Error;
 pub use parse_error::ParseError;
