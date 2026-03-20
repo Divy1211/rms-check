@@ -1,7 +1,5 @@
 use std::path::PathBuf;
 
-use chumsky::container::{Container};
-
 use crate::parsing::{Expr, Type};
 use crate::parsing::{Span, Spanned};
 use crate::r#static::type_check::expression::rms_tc_expr;

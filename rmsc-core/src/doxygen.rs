@@ -7,10 +7,13 @@ use crate::utils::warnings_from_str;
 pub enum Doc {
     None,
     Ignore(HashSet<u32>),
+
+    #[allow(unused)]
     Desc(String),
 }
 
 impl Doc {
+    #[allow(unused)]
     pub fn is_none(&self) -> bool {
         matches!(self, Doc::None)
     }
@@ -41,7 +44,8 @@ impl Doc {
 
         Ok(Doc::Desc(content.join("\n").trim().to_string()))
     }
-    
+
+    #[allow(unused)]
     pub fn render(&self, id: &Identifier, info: &IdInfo) -> String {
         let sign = match &info.type_ {
             Type::Int | Type::Float => {

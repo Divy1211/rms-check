@@ -1,5 +1,6 @@
 use std::hash::{Hash, Hasher};
 
+#[allow(unused)]
 #[derive(Debug, Clone)]
 pub struct Comment(pub String);
 
@@ -20,6 +21,7 @@ impl PartialEq for Comment {
 impl Eq for Comment {}
 
 impl Comment {
+    #[allow(unused)]
     pub fn new(cmt: &str) -> Self {
         Comment(cmt.to_string())
     }

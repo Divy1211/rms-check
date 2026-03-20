@@ -1,5 +1,5 @@
 use std::mem;
-use crate::parsing::{Expr, Type};
+use crate::parsing::{Type};
 use crate::r#static::info::src_loc::SrcLoc;
 use crate::r#static::type_check::propositions::{Guard, Prop};
 

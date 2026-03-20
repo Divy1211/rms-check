@@ -1,5 +1,4 @@
 use std::collections::{HashMap, HashSet};
-use crate::parsing::Identifier;
 use crate::r#static::type_check::propositions::prop::{Prop, Simplifiable};
 use crate::r#static::type_check::propositions::symbol::Symbol;
 
@@ -71,10 +70,10 @@ impl Guard {
 
     pub fn get_prop(&self) -> Prop {
         let mut et = Vec::with_capacity(self.truthy.len() + self.falsy.len());
-        for (var, blocks) in &self.truthy {
+        for (var, _blocks) in &self.truthy {
             et.push(Prop::Var(var.clone()))
         }
-        for (var, blocks) in &self.falsy {
+        for (var, _blocks) in &self.falsy {
             et.push(Prop::Not(var.clone()))
         }
         if let Some((block, arm, chance)) = self.block_arm {

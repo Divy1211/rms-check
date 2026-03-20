@@ -1,9 +1,6 @@
-use std::fs;
 use std::path::PathBuf;
-use chumsky::prelude::*;
 
-use rmsc_core::{lexer, parser, Identifier};
-use rmsc_core::r#static::info::{gen_errs_from_path, gen_errs_from_src, AstMap, TypeEnv};
+use rmsc_core::r#static::info::{gen_errs_from_path, AstMap, TypeEnv};
 
 fn main() {
     let path = r"C:\Users\Divy\RustroverProjects\rms-check\test_rms\test.rms";

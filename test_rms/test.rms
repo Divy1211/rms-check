@@ -28,4 +28,4 @@ if I
     #const H 10
 endif
 
-create_object A
+create_object H

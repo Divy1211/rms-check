@@ -1,11 +1,10 @@
 use std::borrow::Cow;
-use std::collections::{HashMap};
 use std::path::PathBuf;
 
 use chumsky::container::Container;
 use crate::doxygen::Doc;
 use crate::parsing::{AstNode, Expr, Identifier, Literal, Type};
-use crate::parsing::{Span, Spanned};
+use crate::parsing::{Spanned};
 use crate::r#static::info::{
     gen_errs_from_path,
     AstCacheRef,
@@ -18,7 +17,6 @@ use crate::r#static::info::{
     RmsError,
 };
 use crate::r#static::type_check::expression::rms_tc_expr;
-use crate::r#static::type_check::propositions::Prop;
 use crate::r#static::type_check::util::{combine_results};
 
 #[allow(clippy::too_many_arguments)]
@@ -30,7 +28,7 @@ pub fn rms_tc_stmt(
     src_cache: SrcCacheRef,
     comments: &Vec<Spanned<String>>,
     comment_pos: &mut usize,
-    is_top_level: bool,
+    _is_top_level: bool,
 ) -> Result<(), Vec<Error>> {
     let mut docstr = None;
     loop { match comments.get(*comment_pos) {
@@ -40,7 +38,7 @@ pub fn rms_tc_stmt(
         }
         _ => break,
     }};
-    let (doc, _temp_ignore) = docstr
+    let (_doc, _temp_ignore) = docstr
         .map(|(com, span)| {
             match Doc::parse(com) {
                 Err(err) => {

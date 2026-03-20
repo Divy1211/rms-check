@@ -7,6 +7,7 @@ pub use prop::Prop;
 pub use guard::Guard;
 
 mod test {
+    #[allow(unused_imports)]
     use super::*;
 
     #[test]

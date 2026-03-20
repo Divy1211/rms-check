@@ -2,7 +2,6 @@ use ariadne::ReportKind;
 
 use crate::parsing::Identifier;
 use crate::parsing::Span;
-use crate::r#static::info::src_loc::SrcLoc;
 
 #[derive(Debug, Clone)]
 pub enum RmsError {

@@ -7,6 +7,7 @@ mod random;
 mod section;
 mod command;
 mod block;
+mod comment;
 
 use chumsky::prelude::*;
 
