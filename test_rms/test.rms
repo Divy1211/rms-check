@@ -28,4 +28,6 @@ if I
     #const H 10
 endif
 
-create_object H
+create_terrain A {
+    base_terrain H
+}

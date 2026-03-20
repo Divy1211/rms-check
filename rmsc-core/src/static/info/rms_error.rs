@@ -6,17 +6,15 @@ use crate::parsing::Span;
 #[derive(Debug, Clone)]
 pub enum RmsError {
     // type errors
-    ExtraArg { fn_name: String, span: Span },
     TypeMismatch { actual: String, expected: String, span: Span, note: Option<String> },
-    NotCallable { name: String, actual: String, span: Span },
     OpMismatch { op: String, type1: String, type2: String, span: Span, note: Option<String> },
 
     // name errors
     UndefinedName { name: String, span: Span },
     DeadName { name: String, span: Span },
     MaybeDeadName { name: String, span: Span },
-    
-    
+
+
     UnresolvedInclude { inc_filename: String, span: Span },
     
     Syntax { span: Span, msg: String, keywords: Vec<String> },
@@ -26,42 +24,27 @@ pub enum RmsError {
 
 #[derive(Debug, Clone)]
 pub enum WarningKind {
-    TopStrInit = 100,
-    DupCase = 101,
-    DiscardedFn = 102,
-    BreakPt = 103,
-    UnusableClasses = 104,
-    FirstOprArith = 105,
-    CmpSilentCrash = 106,
-    BoolCaseSilentCrash = 107,
-    NumDownCast = 108,
-    NoNumPromo = 109,
+    // TopStrInit = 100,
+    // DupCase = 101,
+    // DiscardedFn = 102,
+    // BreakPt = 103,
+    // UnusableClasses = 104,
+    // FirstOprArith = 105,
+    // CmpSilentCrash = 106,
+    // BoolCaseSilentCrash = 107,
+    // NumDownCast = 108,
+    // NoNumPromo = 109,
 
     UnknownWarningName = 1000,
 }
 
 impl RmsError {
-    pub fn extra_arg(fn_name: &str, span: &Span) -> RmsError {
-        RmsError::ExtraArg {
-            fn_name: String::from(fn_name),
-            span: *span,
-        }
-    }
-
     pub fn type_mismatch(actual: &str, expected: &str, span: &Span, note: Option<&str>) -> RmsError {
         RmsError::TypeMismatch {
             actual: String::from(actual),
             expected: String::from(expected),
             span: *span,
             note: note.map(String::from),
-        }
-    }
-
-    pub fn not_callable(name: &Identifier, actual: &str, span: &Span) -> RmsError {
-        RmsError::NotCallable {
-            name: String::from(&name.0),
-            actual: String::from(actual),
-            span: *span,
         }
     }
 
@@ -123,9 +106,7 @@ impl RmsError {
 
     pub fn span(&self) -> &Span {
         match self {
-            RmsError::ExtraArg { span, .. } => { span }
             RmsError::TypeMismatch { span, .. } => { span }
-            RmsError::NotCallable { span, .. } => { span }
             RmsError::OpMismatch { span, .. } => { span }
             RmsError::UndefinedName { span, .. } => { span }
             RmsError::DeadName { span, .. } => { span }
@@ -145,9 +126,7 @@ impl RmsError {
 
     pub fn kind(&self) -> &str {
         match self {
-            RmsError::ExtraArg { .. } => { "TypeError" }
             RmsError::TypeMismatch { .. } => { "TypeError" }
-            RmsError::NotCallable { .. } => { "TypeError" }
             RmsError::OpMismatch { .. } => { "TypeError" }
 
             RmsError::UndefinedName { .. } => { "NameError" }
@@ -175,15 +154,13 @@ impl RmsError {
     
     pub fn code(&self) -> u32 {
         match self {
-            RmsError::ExtraArg { .. } => { 0 }
-            RmsError::TypeMismatch { .. } => { 1 }
-            RmsError::NotCallable { .. } => { 2 }
-            RmsError::OpMismatch { .. } => { 3 }
-            RmsError::UndefinedName { .. } => { 4 }
-            RmsError::DeadName { .. } => { 5 }
-            RmsError::MaybeDeadName { .. } => { 6 }
-            RmsError::UnresolvedInclude { .. } => { 7 }
-            RmsError::Syntax { .. } => { 8 }
+            RmsError::TypeMismatch { .. } => { 0 }
+            RmsError::OpMismatch { .. } => { 1 }
+            RmsError::UndefinedName { .. } => { 2 }
+            RmsError::DeadName { .. } => { 3 }
+            RmsError::MaybeDeadName { .. } => { 4 }
+            RmsError::UnresolvedInclude { .. } => { 5 }
+            RmsError::Syntax { .. } => { 6 }
             RmsError::Warning { kind, .. } => { kind.as_u32() }
         }
     }
@@ -196,32 +173,32 @@ impl WarningKind {
 
     pub fn as_str(&self) -> &str {
         match self {
-            WarningKind::TopStrInit => { "TopStrInit" }
-            WarningKind::DupCase => { "DupCase" }
-            WarningKind::DiscardedFn => { "DiscardedFn" }
-            WarningKind::BreakPt => { "BreakPt" }
-            WarningKind::UnusableClasses => { "UnusableClasses" }
-            WarningKind::FirstOprArith => { "FirstOprArith" }
-            WarningKind::CmpSilentCrash => { "CmpSilentCrash" }
-            WarningKind::BoolCaseSilentCrash => { "BoolCaseSilentCrash" }
-            WarningKind::NumDownCast => { "NumDownCast" }
-            WarningKind::NoNumPromo => { "NoNumPromo" }
+            // WarningKind::TopStrInit => { "TopStrInit" }
+            // WarningKind::DupCase => { "DupCase" }
+            // WarningKind::DiscardedFn => { "DiscardedFn" }
+            // WarningKind::BreakPt => { "BreakPt" }
+            // WarningKind::UnusableClasses => { "UnusableClasses" }
+            // WarningKind::FirstOprArith => { "FirstOprArith" }
+            // WarningKind::CmpSilentCrash => { "CmpSilentCrash" }
+            // WarningKind::BoolCaseSilentCrash => { "BoolCaseSilentCrash" }
+            // WarningKind::NumDownCast => { "NumDownCast" }
+            // WarningKind::NoNumPromo => { "NoNumPromo" }
             WarningKind::UnknownWarningName => { "UnknownWarningName" }
         }
     }
 
     pub fn from_name(name: &str) -> Option<WarningKind> {
         match name {
-            "TopStrInit"          => { Some(WarningKind::TopStrInit) }
-            "DupCase"             => { Some(WarningKind::DupCase) }
-            "DiscardedFn"         => { Some(WarningKind::DiscardedFn) }
-            "BreakPt"             => { Some(WarningKind::BreakPt) }
-            "UnusableClasses"     => { Some(WarningKind::UnusableClasses) }
-            "FirstOprArith"       => { Some(WarningKind::FirstOprArith) }
-            "CmpSilentCrash"      => { Some(WarningKind::CmpSilentCrash) }
-            "BoolCaseSilentCrash" => { Some(WarningKind::BoolCaseSilentCrash) }
-            "NumDownCast"         => { Some(WarningKind::NumDownCast) }
-            "NoNumPromo"          => { Some(WarningKind::NoNumPromo) }
+            // "TopStrInit"          => { Some(WarningKind::TopStrInit) }
+            // "DupCase"             => { Some(WarningKind::DupCase) }
+            // "DiscardedFn"         => { Some(WarningKind::DiscardedFn) }
+            // "BreakPt"             => { Some(WarningKind::BreakPt) }
+            // "UnusableClasses"     => { Some(WarningKind::UnusableClasses) }
+            // "FirstOprArith"       => { Some(WarningKind::FirstOprArith) }
+            // "CmpSilentCrash"      => { Some(WarningKind::CmpSilentCrash) }
+            // "BoolCaseSilentCrash" => { Some(WarningKind::BoolCaseSilentCrash) }
+            // "NumDownCast"         => { Some(WarningKind::NumDownCast) }
+            // "NoNumPromo"          => { Some(WarningKind::NoNumPromo) }
             
             // UnknownWarningName cannot be ignored, so it is exlcuded here
             _                     => None
