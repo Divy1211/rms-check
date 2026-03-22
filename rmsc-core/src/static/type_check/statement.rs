@@ -70,7 +70,8 @@ pub fn rms_tc_stmt(
             let mut result = None;
             for inc_path in include_dirs.iter() {
                 let mut inc_path = inc_path.clone();
-                inc_path.push(&filename[1..(filename.len()-1)]);
+                let filename = filename.trim_start_matches("\"").trim_end_matches("\"");
+                inc_path.push(filename);
                 if inc_path.is_file() {
                     deps.push(inc_path.clone());
                     drop(_temp_ignore);
@@ -94,7 +95,8 @@ pub fn rms_tc_stmt(
             let mut result = None;
             for inc_path in include_dirs.iter() {
                 let mut inc_path = inc_path.clone();
-                inc_path.push(&filename[1..(filename.len()-1)]);
+                let filename = filename.trim_start_matches("\"").trim_end_matches("\"");
+                inc_path.push(filename);
                 if inc_path.is_file() {
                     result = Some(inc_path.clone())
                 }
