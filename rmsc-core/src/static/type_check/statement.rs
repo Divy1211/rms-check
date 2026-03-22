@@ -144,6 +144,16 @@ pub fn rms_tc_stmt(
             }
             Ok(())
         }
+        AstNode::UnDef((name, _name_span)) => {
+            let guard = type_env.guard.clone();
+            match type_env.identifiers.get_mut(name) {
+                None => {}
+                Some(info) => {
+                    info.join_not(&guard.read().expect("Not concurrent"));
+                }
+            }
+            Ok(())
+        }
         AstNode::IfElseIf { consequents, alternate } => {
             let _nested = type_env.nested_guard();
 

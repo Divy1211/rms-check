@@ -169,14 +169,6 @@ impl TypeEnv {
     }
 
     pub fn check_live(&mut self, id: &Identifier) -> Liveness {
-        self.check_live_rec(id, &mut HashSet::new())
-    }
-
-    fn check_live_rec(&mut self, id: &Identifier, seen: &mut HashSet<Identifier>) -> Liveness {
-        let Some(info) = self.identifiers.get(id) else {
-            return Liveness::Dead;
-        };
-
         let _nested = self.nested_guard_no_block();
         for (var, info) in &self.identifiers {
             match info.guard {
@@ -185,9 +177,18 @@ impl TypeEnv {
                 _ => {},
             }
         }
+        self.check_live_rec(id, &mut HashSet::new())
+    }
 
-        let guard_ref = self.guard.clone();
-        let guard = guard_ref.read().expect("Not concurrent");
+    fn check_live_rec(&mut self, id: &Identifier, seen: &mut HashSet<Identifier>) -> Liveness {
+        let Some(info) = self.identifiers.get(id) else {
+            if id.is_default_name() {
+                return Liveness::Maybe;
+            }
+            return Liveness::Dead;
+        };
+
+        let guard = self.guard();
         let prop = info.guard.simplify(&guard);
         drop(guard);
         match prop {

@@ -14,6 +14,7 @@ pub fn keyword<'src>() -> impl Parser<
     just("#").or_not().ignore_then(ident).map(|ident| match ident.as_str() {
         "const"                               => Token::Const,
         "define"                              => Token::Define,
+        "undefine"                            => Token::Undefine,
 
         "if"                                  => Token::If,
         "elseif"                              => Token::ElseIf,

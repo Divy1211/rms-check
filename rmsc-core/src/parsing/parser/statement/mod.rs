@@ -8,6 +8,7 @@ mod section;
 mod command;
 mod block;
 mod comment;
+mod undef;
 
 use chumsky::prelude::*;
 
@@ -17,6 +18,7 @@ use crate::parsing::parser::parser_input::ParserInput;
 use include::include;
 use label_def::label_def;
 use const_def::const_def;
+use undef::undef;
 use if_else::if_else;
 use random::random;
 use section::section;
@@ -36,6 +38,7 @@ pub fn statement<'tokens>() -> impl Parser<
             include(),
             label_def(),
             const_def(),
+            undef(),
             if_else(statement.clone()),
             random(statement.clone()),
             command(),

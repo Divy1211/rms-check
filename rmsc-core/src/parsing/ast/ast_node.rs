@@ -14,6 +14,7 @@ pub enum AstNode {
         name: Spanned<Identifier>,
         value: Spanned<Expr>,
     },
+    UnDef(Spanned<Identifier>),
     IfElseIf {
         consequents: Vec<(Spanned<Expr>, Spanned<Body>)>,
         alternate: Option<Spanned<Body>>,

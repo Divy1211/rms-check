@@ -9,6 +9,12 @@ pub struct Guard {
     block_arm: Option<(u32, u32, u32)>,
 }
 
+impl Default for Guard {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Guard {
     pub fn new() -> Self {
         Self {
@@ -24,7 +30,10 @@ impl Guard {
 
     pub fn truthify(&mut self, block: u32, v: &str) {
         let key = Symbol::from(v);
-        let truthy =self.truthy.entry(key.clone()).or_insert_with(|| HashSet::new());
+        let truthy = match self.truthy.get_mut(&key) {
+            None => self.truthy.entry(key.clone()).or_default(),
+            Some(truthy) => truthy,
+        };
         truthy.insert(block);
 
         if let Some(falsy) = self.falsy.get_mut(&key) {
@@ -37,7 +46,10 @@ impl Guard {
 
     pub fn falsify(&mut self, block: u32, v: &str) {
         let key = Symbol::from(v);
-        let falsy =self.falsy.entry(key.clone()).or_insert_with(|| HashSet::new());
+        let falsy = match self.falsy.get_mut(&key) {
+            None => self.falsy.entry(key.clone()).or_default(),
+            Some(falsy) => falsy,
+        };
         falsy.insert(block);
 
         if let Some(truthy) = self.truthy.get_mut(&key) {
@@ -70,10 +82,10 @@ impl Guard {
 
     pub fn get_prop(&self) -> Prop {
         let mut et = Vec::with_capacity(self.truthy.len() + self.falsy.len());
-        for (var, _blocks) in &self.truthy {
+        for var in self.truthy.keys() {
             et.push(Prop::Var(var.clone()))
         }
-        for (var, _blocks) in &self.falsy {
+        for var in self.falsy.keys() {
             et.push(Prop::Not(var.clone()))
         }
         if let Some((block, arm, chance)) = self.block_arm {

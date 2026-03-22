@@ -13,9 +13,9 @@ ariadne = { workspace = true }
 blake3 = "1.7.0"
 chumsky = "=1.0.0-alpha.7"
 dashmap = { workspace = true, optional = true }
+regex = "1.12.3"
 ropey = { workspace = true, optional = true }
 tower-lsp = { workspace = true, optional = true }
-rand = "0.10.0"
 
 [[bin]]
 name = "rms-check-test"

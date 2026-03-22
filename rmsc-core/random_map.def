@@ -1,0 +1,1252 @@
+/* random map types for AI */
+/* Numbers come from Object Category ID */
+/* 29 NOV 99 */
+
+#const ARABIA          9
+#const ARCHIPELAGO     10
+#const ARENA           29
+#const BALTIC          11
+#const BLACK_FOREST    12
+#const COASTAL         13
+#const CONTINENTAL     14
+#const CRATER_LAKE     15
+#const FORTRESS        16
+#const GHOST_LAKE      32 
+#const GOLD_RUSH       17
+#const HIGHLAND        18
+#const ISLANDS         19
+#const KING_OF_THE_HILL 30
+#const MEDITERRANEAN   20
+#const MIGRATION       21
+#const MONGOLIA        26
+#const NOMAD           33
+#const OASIS           31
+#const RIVERS          22
+#const SALT_MARSH      28
+#const SCANDANAVIA     25
+#const TEAM_ISLANDS    23
+#const YUCATAN         27
+#const STEPPE          34
+#const BUDAPEST        35
+#const VALLEY          36
+#const ATLANTIC        37
+#const LAND_OF_LAKES   38
+#const LAND_NOMAD      39
+#const CENOTES         40
+#const GOLDEN_HILL     41
+#const MEGARANDOM      42
+#const MICHI           43
+#const AMBUSH          44
+#const CUSTOM 	       45
+#const NILE_DELTA      46
+#const MOUNTAIN_PASS   47
+#const SERENGETI       48
+#const SOCOTRA         49
+#const KILIMANJARO     50
+
+/* TERRAIN TYPES */
+
+#const  BAMBOO            18
+#const  BEACH             2
+#const  DESERT            14
+#const  DIRT              6 
+#const  DIRT2             11
+#const  DIRT3             3
+#const  FOREST            10
+#const  ROCK1             16
+#const  GRASS             0
+#const  GRASS2            12
+#const  GRASS3            9
+#const  ICE               35
+#const  SNOW              32
+#const  GRASS_SNOW        34
+#const  DIRT_SNOW         33
+#const  JUNGLE            17
+#const  LEAVES            5
+#const  PALM_DESERT       13
+#const  PINE_FOREST       19
+#const  SNOW_FOREST       21
+#const  SHALLOW           4
+#const  WATER             1   /* WATER1 */
+#const  MED_WATER         23  /* WATER3 */
+#const  DEEP_WATER        22  /* WATER2 */
+#const  ROAD              24
+#const  ROAD2             25
+#const  ICYSHORE          37
+
+#const DLC_ROCK 40
+#const DLC_SAVANNAH 41
+#const DLC_DIRT4 42
+#const DLC_DRYROAD 43
+#const DLC_MOORLAND 44
+#const DLC_CRACKED 45
+#const DLC_QUICKSAND 46
+#const DLC_BLACK 47
+#const DLC_DRAGONFOREST 48
+#const DLC_BAOBABFOREST 49
+#const DLC_ACACIAFOREST 50
+#const DLC_BEACH2 51
+#const DLC_BEACH3 52
+#const DLC_BEACH4 53
+#const DLC_MANGROVESHALLOW 54
+#const DLC_MANGROVEFOREST 55
+#const DLC_RAINFOREST 56
+#const DLC_WATER4 57
+#const DLC_WATER5 58
+#const DLC_NEWSHALLOW 59
+#const DLC_JUNGLEGRASS 60
+#const DLC_JUNGLEROAD 61
+#const DLC_JUNGLELEAVES 62
+
+#const MEDITERRANEAN_FOREST 88
+#const DLC_REEDSBEACH 91
+#const DLC_DRYGRASS 100
+#const DLC_BOGLAND 101
+#const DLC_DESERTGRAVEL 102
+#const DLC_ROADGRAVEL 103
+#const DLC_FORESTAUTUMN 104
+#const DLC_FORESTSNOWAUTUMN 105
+#const DLC_FORESTDEAD 106
+#const DLC_WETBEACH 107
+#const DLC_GRAVELBEACH 108
+#const DLC_WETROCKBEACH 109
+
+#const BIRCH_FOREST 110
+#const MUDDY_SHALLOW 111
+#const PALM_GRASS_FOREST 112
+#const LUSH_BAMBOO_FOREST 113
+#const YELLOW_SHALLOW_WATER 114
+#const YELLOW_SHALLOW 115
+#const YELLOW_DEEP_WATER 116
+#const GRASS_FLOWERS_1 122
+#const GRASS_FLOWERS_2 123
+#const SNOW_SOFT 124
+#const SNOW_SOFT_LIGHT 125
+#const SNOW_SOFT_STRONG 126
+#const ICE_SOFT 127
+#const SOUTH_AMERICAN_FOREST 128
+#const BLACK_WALKABLE 129
+#const WEEDS_WATER 130
+
+/* CLIFF TYPES */
+
+#const CT_GRANITE   0
+#const CT_DESERT    1
+#const CT_SNOW      2
+#const CT_MARBLE    3
+#const CT_LIMESTONE 4
+#const CT_TERRACE   5
+
+/* SEASON TYPES */
+
+#const CC_DEFAULT 0
+#const CC_AUTUMN 1
+#const CC_WINTER 2
+#const CC_JUNGLE 3
+#const CC_DESERT 4
+#const CC_NIGHT 5
+#const CC_EVENING 6
+#const CC_SPRING 7
+#const CC_SAVANNAH 8
+#const CC_ARCTIC 9
+#const CC_RAINFOREST 10
+#const CC_SWAMP 11
+#const CC_STEPPES 12
+#const CC_MISTY 13
+#const CC_SUMMER 14
+#const CC_MURKY 15
+#const CC_BRUMOUS 16
+#const CC_TWILIGHT 17
+#const CC_DARKNESS 18
+
+/* WATER DEFINITIONS */
+
+#const WD_DEFAULT 0
+#const WD_AFTERNOON 1
+#const WD_ARCTIC 2
+#const WD_CALM 3
+#const WD_CHOPPY 4
+#const WD_DARK_NIGHT 5
+#const WD_DIMMED 6
+#const WD_EVENING 7
+#const WD_HURRICANE 8
+#const WD_MOONLIT_NIGHT 9
+#const WD_MORNING 10
+#const WD_MURKY 11
+#const WD_NIGHT 12
+#const WD_NOON 13
+#const WD_OCEAN 14
+#const WD_RED_TIDE 15
+#const WD_STORMY 16
+#const WD_SUNRISE 17
+#const WD_SUNSET 18
+#const WD_SWAMP 19
+#const WD_TROPICAL 20
+
+/* CIVILIZATIONS */
+
+#const CIVILIZATION_GAIA 0
+#const CIVILIZATION_BRITONS 1
+#const CIVILIZATION_FRANKS 2
+#const CIVILIZATION_GOTHS 3
+#const CIVILIZATION_TEUTONS 4
+#const CIVILIZATION_JAPANESE 5
+#const CIVILIZATION_CHINESE 6
+#const CIVILIZATION_BYZANTINES 7
+#const CIVILIZATION_PERSIANS 8
+#const CIVILIZATION_SARACENS 9
+#const CIVILIZATION_TURKS 10
+#const CIVILIZATION_VIKINGS 11
+#const CIVILIZATION_MONGOLS 12
+#const CIVILIZATION_CELTS 13
+#const CIVILIZATION_SPANISH 14
+#const CIVILIZATION_AZTECS 15
+#const CIVILIZATION_MAYA 16
+#const CIVILIZATION_HUNS 17
+#const CIVILIZATION_KOREANS 18
+#const CIVILIZATION_ITALIANS 19
+#const CIVILIZATION_HINDUSTANIS 20
+#const CIVILIZATION_INCA 21
+#const CIVILIZATION_MAGYARS 22
+#const CIVILIZATION_SLAVS 23
+#const CIVILIZATION_PORTUGUESE 24
+#const CIVILIZATION_ETHIOPIANS 25
+#const CIVILIZATION_MALIANS 26
+#const CIVILIZATION_BERBERS 27
+#const CIVILIZATION_BURMESE 28
+#const CIVILIZATION_KHMER 29
+#const CIVILIZATION_MALAY 30
+#const CIVILIZATION_VIETNAMESE 31
+#const CIVILIZATION_BULGARIANS 32
+#const CIVILIZATION_TATARS 33
+#const CIVILIZATION_CUMANS 34
+#const CIVILIZATION_LITHUANIANS 35
+#const CIVILIZATION_BURGUNDIANS 36
+#const CIVILIZATION_SICILIANS 37
+#const CIVILIZATION_POLES 38
+#const CIVILIZATION_BOHEMIANS 39
+#const CIVILIZATION_DRAVIDIANS 40
+#const CIVILIZATION_BENGALIS 41
+#const CIVILIZATION_GURJARAS 42
+#const CIVILIZATION_ROMANS 43
+#const CIVILIZATION_ARMENIANS 44
+#const CIVILIZATION_GEORGIANS 45
+#const CIVILIZATION_ACHAEMENIDS 46
+#const CIVILIZATION_ATHENIANS 47
+#const CIVILIZATION_SPARTANS 48
+#const CIVILIZATION_SHU 49
+#const CIVILIZATION_WU 50
+#const CIVILIZATION_WEI 51
+#const CIVILIZATION_JURCHENS 52
+#const CIVILIZATION_KHITANS 53
+
+/* ASSIGN TYPES */
+
+#const  AT_PLAYER    0
+#const  AT_COLOR     1
+#const  AT_TEAM      2
+
+/* OBJECT TYPES */
+/* GAIA */
+
+#const  BAMBOO_TREE     348
+#const  BOAR            48
+#const  CACTUS          709
+#const  DEER		65
+#const  MARLIN1         450 /* DOLPHIN1 */
+#const  MARLIN2         451 /* DOLPHIN2 */
+#const  FISH            53  /* FISHX */
+#const  DORADO          455 /* FISH1 */
+#const  SALMON          456 /* FISH2 */
+#const  TUNA            457 /* FISH3 */
+#const  SNAPPER         458 /* FISH4 */
+#const  SHORE_FISH 	69
+#const  FORAGE		59
+#const  FOREST_TREE     411
+#const  GOLD		66
+#const  HAWK            96
+#const  MACAW           816
+#const  MOUNTAIN1		310
+#const  MOUNTAIN2		311
+#const  OAKTREE         349
+#const  PALMTREE        351
+#const  PINETREE        350
+#const  SNOWPINETREE    413
+#const  JUNGLETREE      414 /* PALMS USED INSTEAD */
+#const  SHEEP		594
+#const  SKELETON        710
+#const  STONE		102
+#const  TREE1           399
+#const  TREE2           400
+#const  TREE3           401
+#const  TREE4           402
+#const  TREE5           403
+#const  TURKEY          833
+#const  WOLF            126
+#const  JAGUAR          812
+#const  RELIC		285
+#const  PLANTS          818
+#const  JAVELINA        822
+#const OYSTERS 2170
+ 
+/* UNITS */
+
+#const  ARCHER            4
+#const  KING		434
+#const  KNIGHT           38
+#const  MANGONEL        280
+#const  MILITIA          74
+#const  VILLAGER	       83
+#const  SCOUT           448
+#const  SPEARMAN         93
+#const  GALLEY          539
+#const  MONK		125
+#const  TRADE_CART	128
+
+/* BUILDINGS */
+
+#const  ARCHERY_RANGE    87
+#const  BARRACKS         12
+#const  BLACKSMITH      103
+#const  CASTLE           82
+#const  FARM		 50
+#const  HOUSE            70
+#const  MARKET           84
+#const  MONASTERY		104
+#const  OUTPOST         598
+#const  STABLE		101
+#const  TOWN_CENTER 	109
+#const  WALL            117
+#const  WATCH_TOWER  	 79
+
+/* EXPORTED FROM THE DATABASE */
+
+#const ADMIRAL_YI_SUN_SHIN    844                
+#const AETHELFIRTH    169                        
+#const ALARIC_THE_GOTH     223    
+#const ALEXANDER_NEVSKI    197         
+#const ARBALEST    492                           
+#const ARCHBISHOP    177                         
+/* #const ARCHER    4 */
+#const ARCHERS_OF_THE_EYES    686                
+/* #const ARCHERY_RANGE    87 */
+#const ATTILA_THE_HUN    777                     
+#const BAD_NEIGHBOR    682                       
+#const BAD_NEIGHBOR_PACKED    730                
+#const BAMBOO_FOREST_TREE    348                 
+/* #const BARRACKS    12 */
+#const BATTERING_RAM    35                       
+#const BELISARIUS    167                         
+#const BERSERK    692                            
+/* #const BLACKSMITH    103 */
+#const BLEDA_THE_HUN    779                      
+#const BOMBARD_CANNON    36                      
+#const BOMBARD_TOWER    236                      
+#const BRITISH_RELIC    287                      
+#const BROKEN_CART    858                        
+#const BYZANTINE_RELIC    288                    
+/* #const CACTUS    709 */
+#const CAMEL    329                              
+#const CANNON_GALLEON    420                     
+#const CAPPED_RAM    422                         
+#const CARAVAN    275                            
+/* #const CASTLE    82 */
+#const CATAPHRACT    40                          
+#const CATHEDRAL    599                          
+#const CAVALIER    283                           
+#const CAVALRY_ARCHER    39                      
+#const CHAMPION    567                           
+#const CHARLEMAGNE    165                        
+#const CHARLES_MARTEL    424                     
+#const CHINESE_RELIC    289                      
+#const CHU_KO_NU    73                           
+#const CONQUISTADOR    771                       
+#const CONSTABLE_RICHEMONT    646                
+#const CRACKS    241                             
+#const CRATER    723                             
+#const CROSSBOWMAN    24                         
+/* #const DEER    65 */
+#const DEMOLITION_SHIP    527                    
+#const DIRE_WOLF    89                           
+#const DOCK    45                                
+#const DOME_OF_THE_ROCK    690                   
+#const DUKE_D_ALENCON    638                     
+#const EAGLE_WARRIOR    751                      
+#const ELITE_BERSERK    694                      
+#const ELITE_CANNON_GALLEON    691               
+#const ELITE_CATAPHRACT    553                   
+#const ELITE_CHU_KO_NU    559                    
+#const ELITE_CONQUISTADOR    773                 
+#const ELITE_EAGLE_WARRIOR    752                
+#const ELITE_GENITOUR    596                     
+#const ELITE_HUSKARL    555                      
+#const ELITE_JAGUAR_WARRIOR    726               
+#const ELITE_JANISSARY    557                    
+#const ELITE_LONGBOAT    533                     
+#const ELITE_LONGBOWMAN    530                   
+#const ELITE_MAMELUKE    556                     
+#const ELITE_MANGUDAI    561                     
+#const ELITE_PLUMED_ARCHER    765                
+#const ELITE_SAMURAI    560                      
+#const ELITE_SKIRMISHER    6                     
+#const ELITE_TARKAN    757                       
+#const ELITE_TEUTONIC_KNIGHT    554              
+#const ELITE_THROWING_AXEMAN    531              
+#const ELITE_TURTLE_SHIP    832                  
+#const ELITE_WAR_ELEPHANT    558                 
+#const ELITE_WAR_WAGON    829                    
+#const ELITE_WOAD_RAIDER    534                  
+#const EL_CID    198                             
+#const EL_CID_CAMPEADOR    824                   
+#const EMPEROR_IN_A_BARREL    733                
+#const ERIK_THE_RED    171                       
+#const ES_FLAG    851                            
+/* #const FARM    50 */
+#const FAST_FIRE_SHIP    532                     
+#const FIRE_SHIP    529                          
+#const FIRE_TOWER    190                          
+#const FISHING_SHIP    13                        
+#const FISH_DORADO    455                        
+#const FISH_PERCH    53                          
+#const FISH_SALMON    456                        
+#const FISH_SNAPPER    458                       
+#const FISH_TRAP    199                          
+#const FISH_TUNA    457                          
+#const FLAG_A    600                             
+#const FLAG_B    601                             
+#const FLAG_C    602                             
+#const FLAG_D    603                             
+#const FLAG_E    604                             
+#const FLOWERS_1    334                          
+#const FLOWERS_2    335                          
+#const FLOWERS_3    336                          
+#const FLOWERS_4    337                          
+#const FLOWER_BED    859                         
+#const FORAGE_BUSH    59                         
+/* #const FOREST_TREE    411 */
+#const FORTIFIED_WALL    155                     
+#const FRANKISH_PALADIN    632                   
+#const FRANKISH_RELIC    290                     
+#const FRIAR_TUCK    163                         
+#const GALLEON    442                            
+/* #const GALLEY    539 */
+#const GAWAIN    175                             
+#const GENGHIS_KHAN    731                       
+#const GENITOUR    583                           
+#const GODS_OWN_SLING    683                     
+#const GODS_OWN_SLING_PACKED    729              
+#const GOLD_MINE    66                           
+#const GOTHIC_RELIC    292                       
+#const GRAVE    820                              
+#const GREAT_FISH_MARLIN    450                  
+#const GREAT_FISH_MARLIN2    451                  
+#const GREAT_PYRAMID    696                      
+#const GUARD_TOWER    234                        
+#const GUY_JOSSELYNE    648                      
+#const HALBERDIER    359                         
+#const HAND_CANNONEER    5                       
+#const HARALD_HARDRAADE    426                   
+/* #const HAWK    96 */
+#const HAY_STACK    857                          
+#const HEAD    821                               
+#const HEAVY_CAMEL    330                        
+#const HEAVY_CAVALRY_ARCHER    474               
+#const HEAVY_DEMOLITION_SHIP    528              
+#const HEAVY_SCORPION    542                     
+#const HENRY_V    847                            
+#const HORSE    814                              
+/* #const HOUSE    70 */
+#const HROLF_THE_GANGER    428                   
+#const HUNTING_WOLF    700                       
+#const HUSKARL    41                             
+#const HUSSAR    441                             
+#const IMAM    842                               
+#const IRON_BOAR    810                          
+/* #const JAGUAR    812 */
+#const JAGUAR_WARRIOR    725                     
+#const JANISSARY    46                           
+#const JAPANESE_RELIC    294                     
+/* #const JAVELINA    822 */
+#const JEAN_BUREAU    650                        
+#const JEAN_DE_LORRAIN    644                    
+#const JOAN_OF_ARC    629                        
+#const JOAN_THE_MAID    430                      
+#const JUNGLE_TREE    414                        
+#const KEEP    235                               
+/* #const KING    434 */
+#const KING_ALFONSO    840                       
+#const KING_ARTHUR    173                        
+#const KING_SANCHO    838                        
+#const KITABATAKE    195                         
+/* #const KNIGHT    38 */
+#const KUSHLUK    702                            
+#const LANCELOT    174                           
+#const LA_HIRE    640                            
+#const LIGHT_CAVALRY    546                      
+#const LONGBOAT    250                           
+#const LONGBOWMAN    8                           
+#const LONG_SWORDSMAN    77                      
+#const LORD_DE_GRAVILLE    642                   
+#const LUMBER_CAMP    562                        
+/* #const MACAW    816 */
+#const MAMELUKE    282                           
+/* #const MANGONEL    280 */
+#const MANGUDAI    11                            
+#const MAN_AT_ARMS    75                         
+#const MAP_REVEALER    837                       
+/* #const MARKET    84 */
+#const MASTER_OF_THE_TEMPLAR    680              
+/* #const MILITIA    74 */
+#const MILL    68                                
+#const MINAMOTO    196                           
+#const MINING_CAMP    584                        
+#const MISSIONARY    775                         
+/* #const MONASTERY    104 */
+/* #const MONK    125 */
+#const MONUMENT    826                           
+#const MORDRED    176                            
+#const MOSQUE    655                             
+#const MOUNTAIN_1    310                         
+#const MOUNTAIN_2    311                         
+#const MOUNTAIN_3    744                         
+#const MOUNTAIN_4    745                         
+#const NINE_BANDS    720                         
+#const NOBUNAGA    845                           
+#const OAK_FOREST_TREE    349                    
+#const OLD_STONE_HEAD    855                     
+#const ONAGER    550                             
+#const ORNLU_THE_WOLF    707                     
+/* #const OUTPOST    598 */
+#const PALADIN    569                            
+#const PALISADE_WALL    72                       
+#const PALM_FOREST_TREE    351                   
+#const PATH_1    339                             
+#const PATH_2    340                             
+#const PATH_3    341                             
+#const PATH_4    338                             
+#const PAVILION    624                           
+#const PAVILION2    626                          
+#const PAVILION3    625                          
+#const PERSIAN_RELIC    295                      
+#const PETARD    440                             
+#const PIECE_OF_THE_TRUE_CROSS    688            
+#const PIKEMAN    358                            
+#const PINE_FOREST_TREE    350                   
+#const PLANT    818                              
+#const PLUMED_ARCHER    763                      
+#const POPE_LEO_I    781                         
+#const PYRAMID    689                            
+#const RABID_WOLF    202                         
+/* #const RELIC    285 */
+#const REYNALD_DE_CHATILLON    678               
+#const RICHARD_THE_LIONHEARTED    160            
+#const ROBIN_HOOD    200                         
+#const ROCK    623                               
+#const ROLAND    166                             
+#const ROMAN_RUINS    856                        
+#const RUBBLE_1_X_1    863                       
+#const RUBBLE_2_X_2    864                       
+#const RUBBLE_3_X_3    865                       
+#const RUGS    711                               
+#const RUINS    345                              
+#const SABOTEUR    706                           
+#const SAMURAI    291                            
+#const SARACEN_RELIC    296                      
+#const SCORPION    279                           
+#const SCOUT_CAVALRY    448                      
+#const SCYTHIAN_SCOUT    852                     
+#const SCYTHIAN_WILD_WOMAN    783                
+#const SEA_ROCKS_1    389                        
+#const SEA_ROCKS_2    396                        
+#const SEA_TOWER    785                 
+#const SHAH    704                               
+/* #const SHEEP    594 */
+#const SHERIFF_OF_NOTTINGHAM    164              
+#const SHIPWRECK    721                          
+#const SHIPWRECK2    722                         
+/* #const SHORE_FISH    69 */
+#const SIEGE_ONAGER    588                       
+#const SIEGE_RAM    548                          
+#const SIEGE_WORKSHOP    49                      
+#const SIEGFRIED    170                          
+#const SIEUR_BERTRAND    636                     
+#const SIEUR_DE_METZ    634                      
+#const SIGN    819                               
+#const SIR_JOHN_FASTOLF    652                   
+/* #const SKELETON    710 */
+#const SKIRMISHER    7                           
+#const SNOW_PINE_TREE    413                     
+/* #const SPEARMAN    93 */
+/* #const STABLE    101 */
+#const STATUE    817                             
+#const STONE_MINE    102                         
+#const STONE_WALL    117                         
+#const STUMP    809                              
+#const SUBOTAI    698                            
+#const TAMERLANE    172                          
+#const TARKAN    755                             
+#const TEUTONIC_KNIGHT    25                     
+#const TEUTONIC_RELIC    297                     
+#const THEODORIC_THE_GOTH    168                 
+#const THE_ACCURSED_TOWER    684                 
+#const THE_BLACK_PRINCE    161                   
+#const THE_TOWER_OF_FLIES    685                 
+#const THROWING_AXEMAN    281                    
+#const TORCH    499                              
+#const TORCH_CONVERTING    854                   
+/* #const TOWN_CENTER    109 */
+/* #const TRADE_CART    128 */
+#const TRADE_COG    17                           
+#const TRADE_WORKSHOP    110                     
+#const TRANSPORT_SHIP    545                     
+#const TREBUCHET    42                           
+#const TREBUCHET_PACKED    331                   
+#const TREE_A    399                             
+#const TREE_B    400                             
+#const TREE_C    401                             
+#const TREE_D    402                             
+#const TREE_E    403                             
+#const TREE_F    404                             
+#const TREE_G    405                             
+#const TREE_H    406                             
+#const TREE_I    407                             
+#const TREE_J    408                             
+#const TREE_K    409                             
+#const TREE_L    410                             
+#const TREE_TD    284                            
+/* #const TURKEY    833 */
+#const TURKISH_RELIC    298                      
+#const TURTLE_SHIP    831                        
+#const TWO_HANDED_SWORDSMAN    473               
+#const UNIVERSITY    209                         
+/* #const VILLAGER    83 */
+#const WAR_ELEPHANT    239                       
+#const WAR_GALLEY    21                          
+#const WAR_WAGON    827                          
+/* #const WATCH_TOWER    79 */
+#const WILD_BOAR    48                           
+#const WILD_HORSE    835                         
+#const WILLIAM_THE_CONQUEROR    849              
+#const WILLIAM_WALLACE    432                    
+#const WOAD_RAIDER    232                        
+/* #const WOLF    126 */
+#const WONDER    276                             
+#const YURT    712                               
+#const YURT2    713                              
+#const YURT3    714                              
+#const YURT4    715                              
+#const YURT5    716                              
+#const YURT6    717                              
+#const YURT7    718                              
+#const YURT8    719                              
+
+#const DLC_BEAR 486
+#const DLC_LLAMA 305
+#const DLC_VULTURE 1305
+#const DLC_COW 705
+#const DLC_GOAT 1060
+#const DLC_ELEPHANT 1301
+#const DLC_ZEBRA 1019
+#const DLC_OSTRICH 1026
+#const DLC_STORK 1028
+#const DLC_CROCODILE 1031
+#const DLC_LION 1029
+#const DLC_WILD_CAMEL 884      
+
+#const DLC_FORTIFIED_PALISADE_WALL 119               
+
+#const DLC_ORANGEBUSH 1059
+
+#const DLC_AUTUMNTREE 1248
+#const DLC_AUTUMNSNOWTREE 1249
+#const DLC_DEADTREE 1250
+
+#const DLC_KOMODO 1135
+#const DLC_TIGER 1137
+#const DLC_RHINO 1139
+#const DLC_BOXTURTLE 1141
+#const DLC_WATERBUFFALO 1142
+
+#const DLC_MANGROVE_TREE 1144
+#const DLC_RAINTREE 1146
+#const DLC_ROCKBEACH 1148
+#const DLC_ROCKJUNGLE 1149
+
+#const DLC_BAOBABTREE 1052
+#const DLC_DRAGONTREE 1051
+#const DLC_ACACIATREE 1063
+
+
+#const DLC_BOULDER_A 1048
+#const DLC_BOULDER_B 1049
+#const DLC_BOULDER_C 1050
+#const DLC_AFRICANBUSH 1053
+#const DLC_AFRICANBUSH_2 1054
+
+#const DLC_FEITORIA 1021
+#const DLC_FORTIFIED_TOWER 1102
+
+#const DLC_ORGANGUN 1001
+#const DLC_ELITEORGANGUN 1003
+#const DLC_CARAVEL 1004
+#const DLC_ELITECARAVEL 1006
+#const DLC_CAMELARCHER 1007
+#const DLC_ELITECAMELARCHER 1009
+#const DLC_GENITOUR 1010
+#const DLC_ELITEGENITOUR 1012
+#const DLC_GBETO 1013
+#const DLC_ELITEGBETO 1015
+#const DLC_SHOTELWARRIOR 1016
+#const DLC_ELITESHOTELWARRIOR 1018
+#const DLC_AOE1PRIEST 1023
+#const DLC_FIREGALLEY 1103
+#const DLC_DEMOLITIONRAFT 1104
+#const DLC_SIEGETOWER 1105
+
+#const DLC_PENGUIN 639
+
+#const DLC_MUSA 1034
+#const DLC_SUNDJATA 1035
+#const DLC_TARIQ 1036
+#const DLC_RICHARDDECLARE 1037
+#const DLC_TRISTAN 1038
+#const DLC_YODIT 1039
+#const DLC_HENRY2 1040
+#const DLC_YEKUNOAMLAK 1064
+#const DLC_WARRIORYODIT 1066
+#const DLC_ITZCOATL 1067
+#const DLC_MUSTAFA 1068
+#const DLC_PACAL2 1069
+#const DLC_BABUR 1070
+#const DLC_ABRAHAELEPHANT 1071
+#const DLC_GUGLIELMO 1072
+#const DLC_SU_DINGFANG 1073
+#const DLC_PACHACUTI 1074
+#const DLC_HUAYNA_CAPAC 1075
+#const DLC_MIKLOSTOLDI 1076
+#const DLC_LITTLEJOHN 1077
+#const DLC_ZAWISZATHEBLACK 1078
+#const DLC_SUMANGURU 1080
+#const DLC_DAGNAJAN 1106
+
+#const DLC_GIDAJAN 1109
+#const DLC_BALLISTAELEPHANT 1120
+#const DLC_ELITEBALLISTAELEPHANT 1122
+#const DLC_KARAMBIT 1123
+#const DLC_ELITEKARAMBIT 1125
+#const DLC_ARAMBAI 1126
+#const DLC_ELITEARAMBAI 1128
+#const DLC_RATTANARCHER 1129
+#const DLC_ELITERATTANARCHER 1131
+#const DLC_BATTLEELEPHANT 1132
+#const DLC_ELITEBATTLEELEPHANT 1134
+
+#const DLC_IMPERIALSKIRMISHER 1155
+#const DLC_GAJAH_MADA 1157
+#const DLC_JAYANEGARA 1158
+#const DLC_RADEN_WIJAYA 1159
+#const DLC_SUNDA_ROYAL_FIGHTER 1160
+#const DLC_SURYAVARMAN_I 1162
+#const DLC_UDAYADITYAVARMAN_I 1163
+#const DLC_JAYAVIRAVARMAN 1164
+#const DLC_BAYINNAUNG 1165
+#const DLC_TABINSHWEHTI 1166
+
+#const DLC_BUDDHA_STATUE_A 1171
+#const DLC_BUDDHA_STATUE_B 1172
+#const DLC_BUDDHA_STATUE_C 1173
+#const DLC_BUDDHA_STATUE_D 1174
+#const DLC_FERN_PATCH 1175
+#const DLC_TROWULAN_GATE 1176
+#const DLC_VASES 1177
+
+#const DLC_LELOI 1178
+#const DLC_LELAI1 1179
+#const DLC_LELAI2 1180
+#const DLC_LETRIEN 1181
+#const DLC_LUUNHANCHU 1182
+#const DLC_BUIBI 1183
+#const DLC_DINHLE 1184
+#const DLC_WANGTONG 1185
+#const DLC_ENVOY 1186
+
+
+#const DLC_STORAGE 1081
+#const DLC_AFRICANHUT_A 1082
+#const DLC_AFRICANHUT_B 1083
+#const DLC_AFRICANHUT_C 1084
+#const DLC_AFRICANHUT_D 1085
+#const DLC_AFRICANHUT_E 1086
+#const DLC_AFRICANHUT_F 1087
+#const DLC_AFRICANHUT_G 1088
+#const DLC_GRANARY 1089
+#const DLC_BARRICADE 1090
+
+#const DLC_SAVANNAHPATCH 1033
+#const DLC_MOUNTAIN_5 1041
+#const DLC_MOUNTAIN_6 1042
+#const DLC_MOUNTAIN_7 1043
+#const DLC_MOUNTAIN_8 1044
+#const DLC_MOUNTAIN_9 1045
+#const DLC_MOUNTAIN_10 1046
+#const DLC_MOUNTAIN_11 1047
+
+#const DLC_FENCE 1062
+#const DLC_ANIMALSKELETON 1091
+#const DLC_STELAE_A 1092
+#const DLC_STELAE_B 1093
+#const DLC_STELAE_C 1094
+#const DLC_GALLOW 1095
+
+#const DLC_PIG 1245
+#const DLC_GOOSE 1243
+#const DLC_SNOWLEOPARD 1241
+#const DLC_IBEX 1239
+#const DLC_DROMEDARY 1237
+#const DLC_WILD_DROMEDARY 1247
+
+#const HORSE_B 1356
+#const HORSE_C 1602
+#const HORSE_D 1604
+#const HORSE_E 1606
+
+#const DLC_COW_B 1596
+#const DLC_COW_C 1598
+#const DLC_COW_D 1600
+
+#const CYPRESS_TREE 1347
+#const ITALIAN_PINETREE 1348
+#const OLIVE_TREE 1349
+#const BIRCH_TREE 1717
+#const CRUSADER_KNIGHT 1723
+#const GAZELLE 1796
+
+#const ARGALI 1896
+#const LUSH_BAMBOO_TREE 1984
+#const ASIAN_PINE_TREE 2016
+#const PEACH_BLOSSOM_TREE 2017
+#const WILLOW_TREE 2025
+#const ASIAN_MAPLE_GREEN_TREE 2027
+#const ASIAN_MAPLE_AUTUMN_TREE 2028
+#const CHICKEN_A 2083
+#const WILD_CHICKEN_A 2084
+#const CHICKEN_B 2085
+#const WILD_CHICKEN_B 2086
+#const CHICKEN_C 2087
+#const WILD_CHICKEN_C 2088
+#const BLACK_BEAR 2089
+#const POLAR_BEAR 2090
+#const ARABIAN_WOLF 2091
+#const WILD_HORSE_B 2092
+#const WILD_HORSE_C 2093
+#const WILD_HORSE_D 2094
+#const WILD_HORSE_E 2095
+#const WILD_MONKEY 2096
+#const WILD_PENGUIN 2097
+
+#const BAMBOO_STUMP 1536
+#const BAOBAB_STUMP 1537
+#const LUSH_BAMBOO_STUMP 1538
+#const FELLED_TREE 1539
+#const FELLED_TREE_BAOBAB 1540
+#const FELLED_TREE_BAMBOO 1541
+#const FELLED_TREE_LUSH_BAMBOO 1542
+
+#const RED_FOX 1955
+#const ARCTIC_FOX 1958
+#const LLAMA_B 1963
+#const ARCTIC_WOLF 1965
+#const HARE_A 2098
+#const HARE_B 2099
+#const ARCTIC_HARE 2100
+
+#const TREE_GREEN_OAK 2567
+#const TREE_MONKEY_PUZZLE 2570
+#const TREE_BRAZILWOOD 2580
+#const TREE_WAX_PALM 2583
+#const TAPIR 2589
+#const CAPYBARA 2590
+#const GUANACO 2591
+#const SNAKE 2592
+#const CONDOR 2593
+#const CAIMAN 2594
+#const BLACK_PANTHER 2595
+#const FLAMINGO 2596
+#const RHEA 2597
+#const PAPAYA_TREE 2599
+#const ALPACA 2614
+#const WILD_ALPACA 2615
+#const PINEAPPLE_BUSH 2650
+
+
+#const TOWN_CENTER_FOUNDATION 621
+
+#const TOWN_CENTER_F 71
+#const TOWN_CENTER_C 141
+#const TOWN_CENTER_I 142
+#const TOWN_CENTER_FOUNDATION_F 617
+#const TOWN_CENTER_FOUNDATION_C 484
+#const TOWN_CENTER_FOUNDATION_I 597
+#const HOUSE_F 463
+#const HOUSE_C 464
+#const HOUSE_I 465
+#const HOUSE_NOMADS_C 191
+#const HOUSE_NOMADS_I 192
+#const MONASTERY_F 30
+#const MONASTERY_C 31
+#const MONASTERY_I 32
+#const BARRACKS_F 498
+#const BARRACKS_C 132
+#const BARRACKS_I 20
+#const ARCHERY_RANGE_C 10
+#const ARCHERY_RANGE_I 14
+#const STABLE_C 86
+#const STABLE_I 153
+#const MARKET_C 116
+#const MARKET_I 137
+#const MILL_F 129
+#const MILL_C 130
+#const MILL_I 131
+#const LUMBER_CAMP_F 563
+#const LUMBER_CAMP_C 564
+#const LUMBER_CAMP_I 565
+#const MINING_CAMP_F 585
+#const MINING_CAMP_C 586
+#const MINING_CAMP_I 587
+#const DOCK_F 133
+#const DOCK_C 47
+#const DOCK_I 51
+#const BLACKSMITH_F 105
+#const BLACKSMITH_C 18
+#const BLACKSMITH_I 19
+#const UNIVERSITY_I 210         
+#const SIEGE_WORKSHOP_I 150         
+
+#const VILLAGER_BASE_M 83
+#const VILLAGER_BASE_F 293
+#const VILLAGER_FARMER_M 259
+#const VILLAGER_FARMER_F 214
+#const VILLAGER_SHEPHERD_M 592
+#const VILLAGER_SHEPHERD_F 590
+#const VILLAGER_FORAGER_M 120
+#const VILLAGER_FORAGER_F 354
+#const VILLAGER_HUNTER_M 122
+#const VILLAGER_HUNTER_F 216
+#const VILLAGER_FISHER_M 56
+#const VILLAGER_FISHER_F 57
+#const VILLAGER_WOOD_M 123
+#const VILLAGER_WOOD_F 218
+#const VILLAGER_GOLD_M 579
+#const VILLAGER_GOLD_F 581
+#const VILLAGER_STONE_M 124
+#const VILLAGER_STONE_F 220
+#const VILLAGER_BUILDER_M 118
+#const VILLAGER_BUILDER_F 212
+#const VILLAGER_REPAIRER_M 156
+#const VILLAGER_REPAIRER_F 222
+
+#const VILLAGER_CLASS 904
+#const BUILDING_CLASS 903
+#const OCEAN_FISH_CLASS 905
+#const SHORE_FISH_CLASS 933
+#const FARM_CLASS 949
+#const TREE_CLASS 915
+#const TOWER_CLASS 952
+#const WALL_CLASS 927
+#const GATE_CLASS 939
+#const KING_CLASS 959
+#const LIVESTOCK_CLASS 958
+#const INFANTRY_CLASS 906
+#const ARCHERY_CLASS 900
+#const ARCHERY_CANNON_CLASS 944
+#const CAVALRY_CLASS 912
+#const CAVALRY_ARCHER_CLASS 936
+#const CAVALRY_CANNON_CLASS 923
+#const MONASTERY_CLASS 918
+#const SIEGE_WEAPON_CLASS 913
+#const SCORPION_CLASS 955
+#const PACKED_TREBUCHET_CLASS 951
+#const UNPACKED_TREBUCHET_CLASS 954
+#const PETARD_CLASS 935
+#const WARSHIP_CLASS 922
+
+#const STRING_DINGO 21278
+#const STRING_ALLIGATOR 21285
+#const STRING_EMU 21330
+#const STRING_LEOPARD 21333
+#const STRING_CHEETAH 21334
+#const STRING_WARTHOG 21335
+#const STRING_BUSHPIG 21336
+#const STRING_URIAL 21337
+#const STRING_DOG 21338
+
+
+/*-----------------------------*/
+/* Effect Constants            */
+/*-----------------------------*/
+#const SET_ATTRIBUTE   0	/* Type: Attribute Const */
+#const ADD_ATTRIBUTE   4	/* Type: Attribute Const */
+#const MUL_ATTRIBUTE   5	/* Type: Attribute Const */
+#const MOD_RESOURCE    1	/* Type: ATTR_SET or ATTR_ADD */
+#const MUL_RESOURCE    6	/* Type: ATTR_DISABLE */
+#const SET_TECH_COST 100	/* Type: ResourceAmount const */
+#const ADD_TECH_COST 101	/* Type: ResourceAmount const */
+#const MOD_TECH_TIME 103	/* Type: ATTR_SET or ATTR_ADD */
+#const ENABLE_OBJECT   2	/* Type: ATTR_DISABLE or ATTR_ENABLE, Value: 0 */
+#const UPGRADE_UNIT    3	/* Type: UnitId, Value: 0 */
+#const DISABLE_TECH  102	/* Type: ATTR_DISABLE, Value: TechId */
+#const SPAWN_UNIT      7	/* Type: BuildingId, Item: UnitId, Value: 0 */
+#const MODIFY_TECH     8	/* Type: ModifyTech const */
+#const SET_PLAYER_DATA 9	/* Type: ATTR_SET */
+
+#const GAIA_SET_ATTRIBUTE    -1
+#const GAIA_ADD_ATTRIBUTE    -5
+#const GAIA_MUL_ATTRIBUTE    -6
+#const GAIA_MOD_RESOURCE     -2
+#const GAIA_MUL_RESOURCE     -7
+#const GAIA_SET_TECH_COST  -101
+#const GAIA_ADD_TECH_COST  -102
+#const GAIA_MOD_TECH_TIME  -104
+#const GAIA_ENABLE_OBJECT    -3
+#const GAIA_UPGRADE_UNIT     -4
+#const GAIA_DISABLE_TECH   -103
+#const GAIA_SPAWN_UNIT       -8
+#const GAIA_MODIFY_TECH      -9
+#const GAIA_SET_PLAYER_DATA -10
+
+/*-----------------------------*/
+/* Effect Type Constants       */
+/*-----------------------------*/
+#const ATTR_DISABLE 0
+#const ATTR_ENABLE 1
+#const ATTR_FORCE 2
+#const ATTR_RESEARCH 3
+#const ATTR_SET 0
+#const ATTR_ADD 1
+
+/*-----------------------------*/
+/* ModifyTech Constants        */
+/*-----------------------------*/
+#const ATTR_SET_TIME -1
+#const ATTR_ADD_TIME -2
+#const ATTR_SET_FOOD_COST 0
+#const ATTR_SET_WOOD_COST 1
+#const ATTR_SET_STONE_COST 2
+#const ATTR_SET_GOLD_COST 3
+#const ATTR_SET_LOCATION 4
+#const ATTR_SET_BUTTON 5
+#const ATTR_SET_ICON 6
+#const ATTR_SET_NAME 7
+#const ATTR_SET_DESCRIPTION 8
+#const ATTR_SET_STACKING 9
+#const ATTR_SET_STACKING_RESEARCH_CAP 10
+#const ATTR_SET_HOTKEY 11
+#const ATTR_SET_STATE 12
+#const ATTR_ADD_FOOD_COST 16384
+#const ATTR_ADD_WOOD_COST 16385
+#const ATTR_ADD_STONE_COST 16386
+#const ATTR_ADD_GOLD_COST 16387
+
+/*-----------------------------*/
+/* PlayerData Constants        */
+/*-----------------------------*/
+#const DATA_CIV_NAME_ID 0
+
+/*-----------------------------*/
+/* Attribute Constants         */
+/*-----------------------------*/
+#const ATTR_HITPOINTS 0
+#const ATTR_LINE_OF_SIGHT 1
+#const ATTR_GARRISON_CAPACITY 2
+#const ATTR_RADIUS_1 3
+#const ATTR_RADIUS_2 4
+#const ATTR_MOVE_SPEED 5
+#const ATTR_ROTATE_SPEED 6
+#const ATTR_ARMOR 8
+#const ATTR_ATTACK 9
+#const ATTR_RELOAD_TIME 10
+#const ATTR_ACCURACY_PERCENT 11
+#const ATTR_MAX_RANGE 12
+#const ATTR_WORK_RATE 13
+#const ATTR_RESOURCE_CARRY 14
+#const ATTR_BASE_ARMOR 15
+#const ATTR_PROJECTILE_ID 16
+#const ATTR_UPGRADE_GRAPHIC 17
+#const ATTR_PROJECTILE_INTELLIGENCE 19
+#const ATTR_MIN_RANGE 20
+#const ATTR_STORAGE_VALUE 21
+#const ATTR_BLAST_RADIUS 22
+#const ATTR_SEARCH_RADIUS 23
+#const ATTR_HIDDEN_DAMAGE_RESIST 24
+#const ATTR_ICON_ID 25
+#const ATTR_STORAGE2_VALUE 26
+#const ATTR_STORAGE3_VALUE 27
+#const ATTR_FOG_FLAG 28
+#const ATTR_OCCLUSION_MODE 29
+#const ATTR_GARRISON_TYPE 30
+#const ATTR_RADIUS_3 32
+#const ATTR_CAN_BE_BUILT_ON 33
+#const ATTR_FOUNDATION_TERRAIN 34
+#const ATTR_HERO_STATUS 40
+#const ATTR_ATTACK_DELAY 41
+#const ATTR_TRAIN_LOCATION 42
+#const ATTR_TRAIN_BUTTON 43
+#const ATTR_BLAST_LEVEL 44
+#const ATTR_BLAST_DEFENSE 45
+#const ATTR_SHOWN_ATTACK 46
+#const ATTR_SHOWN_RANGE 47
+#const ATTR_SHOWN_MELEE_ARMOR 48
+#const ATTR_SHOWN_PIERCE_ARMOR 49
+#const ATTR_NAME_ID 50
+#const ATTR_CREATE_SDESC_ID 51
+#const ATTR_TERRAIN_ID 53
+#const ATTR_TRAITS 54
+#const ATTR_PIECE 56
+#const ATTR_DEAD_ID 57
+#const ATTR_HOTKEY_ID 58
+#const ATTR_MAX_CHARGE 59
+#const ATTR_RECHARGE_RATE 60
+#const ATTR_CHARGE_EVENT 61
+#const ATTR_CHARGE_TYPE 62
+#const ATTR_COMBAT_ABILITY 63
+#const ATTR_ATTACK_DISPERSION 64
+#const ATTR_PROJECTILE2_ID 65
+#const ATTR_BLOOD_ID 66
+#const ATTR_HIT_MODE 67
+#const ATTR_VANISH_MODE 68
+#const ATTR_PROJECTILE_ARC 69
+#const ATTR_ATTACK_GRAPHIC 70
+#const ATTR_STANDING_GRAPHIC 71
+#const ATTR_STANDING2_GRAPHIC 72
+#const ATTR_DYING_GRAPHIC 73
+#const ATTR_UNDEAD_GRAPHIC 74
+#const ATTR_WALKING_GRAPHIC 75
+#const ATTR_RUNNING_GRAPHIC 76
+#const ATTR_SPECIAL_GRAPHIC 77
+#const ATTR_OBSTRUCTION_TYPE 78
+#const ATTR_BLOCKAGE_CLASS 79
+#const ATTR_SELECTION_EFFECT 80
+#const ATTR_SPECIAL_ABILITY 81
+#const ATTR_IDLE_ATTACK_GRAPHIC 82
+#const ATTR_HERO_GLOW_GRAPHIC 83
+#const ATTR_GARRISON_GRAPHIC 84
+#const ATTR_CONSTRUCTION_GRAPHIC 85
+#const ATTR_SNOW_GRAPHIC 86
+#const ATTR_DESTRUCTION_GRAPHIC 87
+#const ATTR_DESTRUCTION_RUBBLE_GRAPHIC 88
+#const ATTR_RESEARCHING_GRAPHIC 89
+#const ATTR_RESEARCH_COMPLETED_GRAPHIC 90
+#const ATTR_DAMAGE_GRAPHIC 91
+#const ATTR_SELECTION_SOUND 92
+#const ATTR_SELECTION_SOUND_EVENT 93
+#const ATTR_DYING_SOUND 94
+#const ATTR_DYING_SOUND_EVENT 95
+#const ATTR_TRAIN_SOUND 96
+#const ATTR_TRAIN_SOUND_EVENT 97
+#const ATTR_DAMAGE_SOUND 98
+#const ATTR_DAMAGE_SOUND_EVENT 99
+#const ATTR_RESOURCE_COST 100
+#const ATTR_CREATION_TIME 101
+#const ATTR_GARRISON_ARROWS 102
+#const ATTR_FOOD_COST 103
+#const ATTR_WOOD_COST 104
+#const ATTR_GOLD_COST 105
+#const ATTR_STONE_COST 106
+#const ATTR_MAX_DUP_MISSILES 107
+#const ATTR_HEALING_RATE 108
+#const ATTR_REGENERATION_RATE 109
+#const ATTR_POPULATION 110
+#const ATTR_MIN_CONV_MOD 111
+#const ATTR_MAX_CONV_MOD 112
+#const ATTR_CONV_CHANCE_MOD 113
+#const ATTR_FORMATION_CATEGORY 114
+#const ATTR_AREA_DAMAGE 115
+#const ATTR_DAMAGE_REFLECTION 118
+#const ATTR_FRIENDLY_FIRE_DAMAGE 119
+#const ATTR_REGENERATION_HP_PERCENT 120
+#const ATTR_BUTTON_ICON_ID 121
+#const ATTR_SHORT_TOOLTIP_ID 122
+#const ATTR_EXTENDED_TOOLTIP_ID 123
+#const ATTR_HOTKEY_ACTION 124
+#const ATTR_CHARGE_PROJECTILE_ID 125
+#const ATTR_AVAILABLE_FLAG 126
+#const ATTR_DISABLED_FLAG 127
+#const ATTR_ATTACK_PRIORITY 128
+#const ATTR_INVULNERABILITY_LEVEL 129
+#const ATTR_GARRISON_FIREPOWER 130
+#const ATTR_ATTACK2_GRAPHIC 131
+#const ATTR_COMMAND_SOUND 132
+#const ATTR_COMMAND_SOUND_EVENT 133
+#const ATTR_MOVE_SOUND 134
+#const ATTR_MOVE_SOUND_EVENT 135
+#const ATTR_CONSTRUCTION_SOUND 136
+#const ATTR_CONSTRUCTION_SOUND_EVENT 137
+#const ATTR_TRANSFORM_SOUND 138
+#const ATTR_TRANSFORM_SOUND_EVENT 139
+#const ATTR_RUN_PATTERN 140
+#const ATTR_INTERFACE_KIND 141
+#const ATTR_COMBAT_LEVEL 142
+#const ATTR_INTERACTION_MODE 143
+#const ATTR_MINIMAP_MODE 144
+#const ATTR_TRAILING_UNIT 145
+#const ATTR_TRAIL_MODE 146
+#const ATTR_TRAIL_DENSITY 147
+#const ATTR_PROJECTILE_GRAPHIC_DISPLACEMENT_X 148
+#const ATTR_PROJECTILE_GRAPHIC_DISPLACEMENT_Y 149
+#const ATTR_PROJECTILE_GRAPHIC_DISPLACEMENT_Z 150
+#const ATTR_PROJECTILE_SPAWNING_AREA_WIDTH 151
+#const ATTR_PROJECTILE_SPAWNING_AREA_LENGTH 152
+#const ATTR_PROJECTILE_SPAWNING_AREA_RANDOMNESS 153
+#const ATTR_DAMAGE_GRAPHICS_ENTRY_MOD 154
+#const ATTR_DAMAGE_GRAPHICS_TOTAL_NUM 155
+#const ATTR_DAMAGE_GRAPHIC_PERCENT 156
+#const ATTR_DAMAGE_GRAPHIC_APPLY_MODE 157
+#const ATTR_TRAIN_LOCATIONS_ENTRY_MOD 158
+#const ATTR_TRAIN_LOCATIONS_TOTAL_NUM 159
+#const ATTR_ADD_ARMOR_TYPE 160
+#const ATTR_ADD_ATTACK_TYPE 161
+#const ATTR_CHARGE_TARGET 162
+#const ATTR_SIZE_CLASS 163
+
+/*-----------------------------*/
+/* ResourceAmount Constants    */
+/*-----------------------------*/
+#const AMOUNT_FOOD 0
+#const AMOUNT_WOOD 1
+#const AMOUNT_STONE 2
+#const AMOUNT_GOLD 3
+#const AMOUNT_POPULATION_CAP 4
+#const AMOUNT_POPULATION 11
+#const AMOUNT_CONVERT_PRIEST 27
+#const AMOUNT_CONVERT_BUILDING 28
+#const AMOUNT_BONUS_POPULATION_CAP 32
+#const AMOUNT_TOWN_CENTER_UNAVAILABLE 48
+#const AMOUNT_STARTING_FOOD 91
+#const AMOUNT_STARTING_WOOD 92
+#const AMOUNT_STARTING_STONE 93
+#const AMOUNT_STARTING_GOLD 94
+#const AMOUNT_BUILDING_TRICKLE_FOOD 205
+#const AMOUNT_BUILDING_TRICKLE_WOOD 206
+#const AMOUNT_BUILDING_TRICKLE_STONE 207
+#const AMOUNT_BUILDING_TRICKLE_GOLD 208
+#const AMOUNT_REVEAL_ENEMY 209
+#const AMOUNT_REVEAL_RELICS 210
+#const AMOUNT_ELEVATION_HIGHER_BONUS 211
+#const AMOUNT_ELEVATION_LOWER_BONUS 212
+#const AMOUNT_MONUMENT_TRICKLE_FOOD 221
+#const AMOUNT_MONUMENT_TRICKLE_WOOD 222
+#const AMOUNT_MONUMENT_TRICKLE_STONE 223
+#const AMOUNT_MONUMENT_TRICKLE_GOLD 224
+#const AMOUNT_FOOD_GENERATION 230
+#const AMOUNT_WOOD_GENERATION 231
+#const AMOUNT_STONE_GENERATION 232
+#const AMOUNT_GOLD_GENERATION 233
+#const AMOUNT_WORKSHOP_TRICKLE_FOOD 242
+#const AMOUNT_WORKSHOP_TRICKLE_WOOD 243
+#const AMOUNT_WORKSHOP_TRICKLE_STONE 244
+#const AMOUNT_WORKSHOP_TRICKLE_GOLD 245
+
+/*-----------------------------*/
+/* Magic Number Constants      */
+/*-----------------------------*/
+#const RANDOM_OBJECT 32767

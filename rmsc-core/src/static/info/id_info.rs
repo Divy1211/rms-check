@@ -19,4 +19,9 @@ impl IdInfo {
         let current = mem::replace(&mut self.guard, Prop::False);
         self.guard = current | guard.get_prop()
     }
+
+    pub fn join_not(&mut self, guard: &Guard) {
+        let current = mem::replace(&mut self.guard, Prop::False);
+        self.guard = current & !guard.get_prop()
+    }
 }

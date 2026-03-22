@@ -19,10 +19,11 @@ fn main() {
     let mut ast_cache = AstMap::new();
     let mut src_cache = AstMap::new();
     
-    // let prelude_path = PathBuf::from(r"prelude.xs");
-    // let prelude = include_str!(r"../../xsc-core/prelude.xs");
-    //
-    // gen_errs_from_src(&prelude_path, prelude, &mut type_env, &mut ast_cache, &mut src_cache).expect("Prelude can't produce parse errors");
+    let random_map_def_path = PathBuf::from(r"random_map.def");
+    let random_map_def = include_str!(r"../../rmsc-core/random_map.def");
+
+    gen_errs_from_src(&random_map_def_path, random_map_def, &mut type_env, &mut ast_cache, &mut src_cache)
+        .expect("random_map.def can't produce parse errors");
 
     let mut has_errors = false;
     if let Some(extra_prelude_path) = extra_prelude_path {
@@ -35,9 +36,9 @@ fn main() {
     for (filepath, errs) in type_env.errs() {
         if errs.is_empty() {
             continue;
-        }/* else if filepath == &prelude_path {
-            panic!("Prelude can't produce errors")
-        }*/
+        } else if filepath == &random_map_def_path {
+            panic!("random_map.def can't produce errors")
+        }
         let new_errs = print_xs_errs(filepath, errs, &ignores);
         has_errors = has_errors || new_errs;
     }

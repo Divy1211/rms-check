@@ -41,6 +41,7 @@ pub enum Token {
 
     Const,
     Define,
+    Undefine,
 
     If,
     ElseIf,
@@ -273,6 +274,7 @@ impl Display for Token {
 
             Token::Const => write!(f, "#const"),
             Token::Define => write!(f, "#define"),
+            Token::Undefine => write!(f, "#undefine"),
 
             Token::If => write!(f, "if"),
             Token::ElseIf => write!(f, "elseif"),

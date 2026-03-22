@@ -13,14 +13,6 @@ start_random
     percent_chance 25 #const D 10
 end_random
 
-if A
-    #const E 10
-endif
-
-if G
-    #const F 10
-endif
-
 if H
     #const I 10
 endif
@@ -28,6 +20,4 @@ if I
     #const H 10
 endif
 
-create_terrain A {
-    base_terrain H
-}
+#include_drs "test.inc"

@@ -98,4 +98,14 @@ mod test {
 
         assert_eq!(prop, Prop::False);
     }
+
+    #[test]
+    fn test_simplify_complex_not() {
+        let a = Prop::from_name("A");
+        let b = Prop::from_name("B");
+        let prop = a & b;
+        let prop = prop.clone() & !prop;
+
+        assert_eq!(prop, Prop::False);
+    }
 }

@@ -19,6 +19,9 @@ pub fn rms_tc_expr(
     }
     Expr::Identifier(id) => {
         let Some(IdInfo { type_, ..}) = type_env.get(id) else {
+            if id.is_default_name() {
+                return Some(Type::Label);
+            }
             type_env.add_err(path, RmsError::undefined_name(id, span));
             return None;
         };

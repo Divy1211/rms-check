@@ -24,7 +24,8 @@ impl Not for Prop {
             Prop::False => Prop::True,
             Prop::Var(s) => Prop::Not(s.clone()),
             Prop::Not(s) => Prop::Var(s.clone()),
-            p => unreachable!("Internal Error: Not over compound proposition {:?}", p),
+            Prop::And(et) => Prop::Or(et.into_iter().map(Not::not).collect()),
+            Prop::Or(vel) => Prop::And(vel.into_iter().map(Not::not).collect()),
         }
     }
 }
@@ -48,7 +49,14 @@ impl BitAnd for Prop {
             (p1 @ (Prop::Var(_) | Prop::Not(_)), p2 @ (Prop::Var(_) | Prop::Not(_))) => {
                 vec![p1, p2].simplify_and()
             },
-            (p1, p2) => unreachable!("Internal Error: Attempting to and {:?} {:?}. DNF must be maintained", p1, p2),
+            (Prop::Or(mut vel), p @ (Prop::Var(_) | Prop::Not(_) | Prop::And(_)))
+            | (p @ (Prop::Var(_) | Prop::Not(_) | Prop::And(_)), Prop::Or(mut vel)) => {
+                for prop in vel.iter_mut() {
+                    *prop = std::mem::replace(prop, Prop::False) & p.clone();
+                }
+                vel.simplify_or()
+            }
+            (p1, p2) => unreachable!("Internal Error: Attempting to and {:?} {:?}. Too expensive", p1, p2),
         }
     }
 }
