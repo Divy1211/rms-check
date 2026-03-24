@@ -8,7 +8,7 @@ use crate::r#static::info::id_info::IdInfo;
 use crate::r#static::info::rms_error::RmsError;
 use crate::r#static::type_check::propositions::{Guard, Prop, Symbol};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Liveness {
     Live,
     Dead,
@@ -16,7 +16,7 @@ pub enum Liveness {
 }
 
 impl Liveness {
-    pub fn not(self) -> Liveness {
+    pub fn invert(self) -> Liveness {
         match self {
             Liveness::Live => Liveness::Dead,
             Liveness::Dead => Liveness::Live,
@@ -64,10 +64,6 @@ impl Drop for NestedGuard {
 impl TypeEnv {
     pub fn nested_guard(&mut self) -> NestedGuard {
         self.last_block += 1;
-        self.nested_guard_no_block()
-    }
-
-    fn nested_guard_no_block(&self) -> NestedGuard {
         NestedGuard {
             prev_guard: Some(self.guard.read().expect("Not concurrent").clone()),
             guard: self.guard.clone(),
@@ -78,14 +74,14 @@ impl TypeEnv {
         self.guard.read().expect("Not concurrent")
     }
 
-    pub fn in_arm(&self, arm: u32, chance: u32) {
+    pub fn in_arm(&mut self, arm: u32, chance: u32) {
         self.guard.write().expect("Not concurrent").in_arm(self.last_block, arm, chance);
     }
 
-    pub fn truthify(&self, v: &str) {
+    pub fn truthify(&mut self, v: &str) {
         self.guard.write().expect("Not concurrent").truthify(self.last_block, v);
     }
-    pub fn falsify(&self, v: &str) {
+    pub fn falsify(&mut self, v: &str) {
         self.guard.write().expect("Not concurrent").falsify(self.last_block, v);
     }
     
@@ -168,11 +164,11 @@ impl TypeEnv {
             .extend(errs);
     }
 
-    pub fn check_live(&mut self, id: &Identifier) -> Liveness {
+    pub fn check_live(&self, id: &Identifier) -> Liveness {
         self.check_live_rec(id, &mut HashSet::new())
     }
 
-    fn check_live_rec(&mut self, id: &Identifier, seen: &mut HashSet<Identifier>) -> Liveness {
+    fn check_live_rec(&self, id: &Identifier, seen: &mut HashSet<Identifier>) -> Liveness {
         let Some(info) = self.identifiers.get(id) else {
             if id.is_default_name() {
                 return Liveness::Maybe;
@@ -203,7 +199,7 @@ impl TypeEnv {
                         Liveness::Dead
                     } else {
                         seen.insert(id.clone());
-                        self.check_live_rec(&id, seen).not()
+                        self.check_live_rec(&id, seen).invert()
                     }
                 },
                 Symbol::Random { .. } => Liveness::Maybe

@@ -71,10 +71,10 @@ mod test {
         let a = Prop::from_name("A");
         let b = Prop::from_name("B");
         let prop = a.clone() & b.clone() | a & !b;
-        let mut G = Guard::new();
-        G.truthify(0, "A");
+        let mut guard = Guard::new();
+        guard.truthify(0, "A");
 
-        assert_eq!(prop.simplify(&G), Prop::True);
+        assert_eq!(prop.simplify(&guard), Prop::True);
     }
 
     #[test]
@@ -84,10 +84,10 @@ mod test {
         let p11 = Prop::from_block(1, 1, 50);
         let p12 = Prop::from_block(1, 2, 50);
         let prop = a.clone() & p11 | a & p12 | b;
-        let mut G = Guard::new();
-        G.truthify(0, "A");
+        let mut guard = Guard::new();
+        guard.truthify(0, "A");
 
-        assert_eq!(prop.simplify(&G), Prop::True);
+        assert_eq!(prop.simplify(&guard), Prop::True);
     }
 
     #[test]

@@ -28,4 +28,4 @@ if I
     #const H 10
 endif
 
-#include_drs "test.inc"
+/* #include_drs "test.inc" */
