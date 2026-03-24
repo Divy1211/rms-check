@@ -169,14 +169,6 @@ impl TypeEnv {
     }
 
     pub fn check_live(&mut self, id: &Identifier) -> Liveness {
-        let _nested = self.nested_guard_no_block();
-        for (var, info) in &self.identifiers {
-            match info.guard {
-                Prop::True => self.truthify(&var.0),
-                Prop::False => self.falsify(&var.0),
-                _ => {},
-            }
-        }
         self.check_live_rec(id, &mut HashSet::new())
     }
 

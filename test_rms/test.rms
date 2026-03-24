@@ -13,6 +13,14 @@ start_random
     percent_chance 25 #const D 10
 end_random
 
+if A
+    #define E
+endif
+
+if E
+    #define F
+endif
+
 if H
     #const I 10
 endif
