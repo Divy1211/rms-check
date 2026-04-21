@@ -9,13 +9,14 @@ pub use statements::{rms_tc};
 mod test {
     #[allow(unused_imports)]
     use crate::Identifier;
+    #[allow(unused_imports)]
     use crate::r#static::info::{gen_errs_from_path, AstMap, Liveness, TypeEnv};
     use std::path::PathBuf;
     use std::sync::{LazyLock};
 
     #[allow(unused)]
     static TYPE_ENV: LazyLock<TypeEnv> = LazyLock::new(|| {
-        let path = r"C:\Users\Divy\RustroverProjects\rms-check\test_rms\test.rms";
+        let path = r"C:\Users\Divy\RustroverProjects\rms-check\test_rms\liveness_test.rms";
         let path = PathBuf::from(path);
 
         let mut type_env= TypeEnv::new(vec![]);

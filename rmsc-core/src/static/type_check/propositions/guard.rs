@@ -1,4 +1,5 @@
 use std::collections::{HashMap, HashSet};
+use crate::Identifier;
 use crate::r#static::type_check::propositions::prop::{Prop, Simplifiable};
 use crate::r#static::type_check::propositions::symbol::Symbol;
 
@@ -58,6 +59,14 @@ impl Guard {
                 self.truthy.remove(&key);
             }
         }
+    }
+
+    pub fn is_true(&self, v: &Identifier) -> bool {
+        self.truthy.contains_key(&Symbol::Name(v.clone()))
+    }
+
+    pub fn is_false(&self, v: &Identifier) -> bool {
+        self.falsy.contains_key(&Symbol::Name(v.clone()))
     }
 
     pub fn lookup(&self, v: &Symbol) -> Prop {

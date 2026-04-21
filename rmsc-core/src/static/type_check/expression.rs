@@ -18,14 +18,21 @@ pub fn rms_tc_expr(
         Literal::Str(_) => None,
     }
     Expr::Identifier(id) => {
+        let liveness = type_env.check_live(id);
         let Some(IdInfo { type_, ..}) = type_env.get(id) else {
             if id.is_default_name() {
                 return Some(Type::Label);
             }
+
+            /* Something like: if D create_terrain D { ... } endif should not issue an undefined name error */
+            if liveness == Liveness::Live {
+                return Some(Type::Float);
+            }
+
             type_env.add_err(path, RmsError::undefined_name(id, span));
             return None;
         };
-        match type_env.check_live(id) {
+        match liveness {
             Liveness::Live => {}
             Liveness::Dead => {
                 type_env.add_err(path, RmsError::dead_name(id, span));

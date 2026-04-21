@@ -169,6 +169,15 @@ impl TypeEnv {
     }
 
     fn check_live_rec(&self, id: &Identifier, seen: &mut HashSet<Identifier>) -> Liveness {
+        let guard = self.guard();
+
+        if guard.is_true(id) {
+            return Liveness::Live;
+        }
+        if guard.is_false(id) {
+            return Liveness::Dead;
+        }
+
         let Some(info) = self.identifiers.get(id) else {
             if id.is_default_name() {
                 return Liveness::Maybe;
@@ -176,7 +185,6 @@ impl TypeEnv {
             return Liveness::Dead;
         };
 
-        let guard = self.guard();
         let prop = info.guard.simplify(&guard);
         drop(guard);
         match prop {
