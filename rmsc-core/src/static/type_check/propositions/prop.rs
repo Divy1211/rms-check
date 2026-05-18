@@ -87,6 +87,10 @@ impl BitOr for Prop {
 }
 
 impl Prop {
+    pub fn is_singleton(&self) -> bool {
+        matches!(self, Prop::True | Prop::False | Prop::Var(_) | Prop::Not(_))
+    }
+
     pub fn is_not(&self) -> bool {
         matches!(self, Prop::Not(_))
     }
@@ -187,7 +191,7 @@ impl Simplifiable for Vec<Prop> {
                         blocks.insert((block, prop.is_not()));
                     }
                 }
-                _ => unreachable!("Internal Error: Propositions are always in DNF")
+                _ => unreachable!("Internal Error: Propositions are always in DNF {:?}", prop)
             }
         }
 
@@ -197,6 +201,10 @@ impl Simplifiable for Vec<Prop> {
                 .enumerate()
                 .filter_map(|(i, x)| if removal.contains(&i) { None } else { Some(x) })
                 .collect()
+        }
+
+        if self.len() == 1 {
+            return self.into_iter().next().unwrap();
         }
 
         Prop::And(self)

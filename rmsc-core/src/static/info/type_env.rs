@@ -178,9 +178,13 @@ impl TypeEnv {
                     let Some(info) = self.identifiers.get(id) else {
                         break 'result Prop::Var(Symbol::Name(id.clone()));
                     };
-                    let r= self.substitute_singletons(&info.guard, guard, seen);
+                    let r = self.substitute_singletons(&info.guard, guard, seen);
                     seen.remove(id);
-                    r
+                    if r.is_singleton() {
+                        r
+                    } else {
+                        Prop::Var(Symbol::Name(id.clone()))
+                    }
                 };
                 if prop.is_not() {
                     result.not()
@@ -213,7 +217,7 @@ impl TypeEnv {
             Prop::True => Liveness::Live,
             Prop::False => Liveness::Dead,
             Prop::Var(Symbol::Name(id)) => {
-                if id.is_default_name() {
+                if id.is_default_name() || self.identifiers.contains_key(&id) {
                     Liveness::Maybe
                 } else {
                     Liveness::Dead

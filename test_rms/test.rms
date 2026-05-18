@@ -9,4 +9,8 @@ elseif B
     #const C 10
 endif
 
-create_terrain C {}
+if C
+    #const D 10
+endif
+
+create_terrain D {}
