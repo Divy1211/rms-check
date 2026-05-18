@@ -3,7 +3,7 @@ mod prop;
 mod guard;
 
 pub use symbol::Symbol;
-pub use prop::Prop;
+pub use prop::{Prop, Simplifiable};
 pub use guard::Guard;
 
 mod test {

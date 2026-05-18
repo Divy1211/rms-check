@@ -14,7 +14,10 @@
     - $P_{k,n}(x)$ is the guard of block $k$ arm $n$. It can be derived if $x \geq 100$.
     - $P_{k,n}(0) = \bot$ and $P_{k,n}(100) = \top$.
     - $P_{k,1}(x_1) \lor ... \lor P_{k,n}(x_n) = P_{k,1..n}(\sum_{i=1}^n x_i)$
-    - Lemma: $(P_{k,1}(x_1) \land g) \lor (P_{k,2}(x_2) \land g) = g$ iff $x_1 + x_2 \geq 100$
+    - Lemma 1: $P_{k,n}(x_1) \land P_{k,m}(x_2) = \bot$
+    - Lemma 2: $P_{k,n}(x_1) \land \neg P_{k,m}(x_2) = P_{k,n}(x_1)$
+    - Lemma 3: $\neg P_{k,n}(x_1) \lor \neg P_{k,m}(x_2) = \top$
+    - Lemma 4: $(P_{k,1}(x_1) \land g) \lor (P_{k,2}(x_2) \land g) = g$ iff $x_1 + x_2 \geq 100$
 - $L, G \vdash \bar{S} \implies L'$ set $L$ is updated to $L'$ when analysing statements $\bar{S}$ along with the current guard $G$ (read as $L, G$ yield $\bar{S}$ implies $L'$).
 - $$\begin{array}{rc}
   {\tt (rmsLaCase)} & \begin{array}{c}

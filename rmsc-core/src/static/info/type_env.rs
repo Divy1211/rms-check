@@ -1,4 +1,5 @@
 use std::collections::{HashMap, HashSet};
+use std::ops::Not;
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock, RwLockReadGuard};
 use chumsky::container::{Container};
@@ -6,7 +7,7 @@ use chumsky::container::{Container};
 use crate::parsing::{Identifier};
 use crate::r#static::info::id_info::IdInfo;
 use crate::r#static::info::rms_error::RmsError;
-use crate::r#static::type_check::propositions::{Guard, Prop, Symbol};
+use crate::r#static::type_check::propositions::{Guard, Prop, Symbol, Simplifiable};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Liveness {
@@ -129,10 +130,6 @@ impl TypeEnv {
         self.identifiers.push((id.clone(), info))
     }
 
-    pub fn set_global(&mut self, id: &Identifier, info: IdInfo) {
-        self.identifiers.push((id.clone(), info))
-    }
-
     fn process_err(&mut self, err: &mut RmsError) {
         if !err.is_warning() {
             return;
@@ -164,53 +161,63 @@ impl TypeEnv {
             .extend(errs);
     }
 
-    pub fn check_live(&self, id: &Identifier) -> Liveness {
-        self.check_live_rec(id, &mut HashSet::new())
+    pub fn substitute_singletons(&self, prop: &Prop, guard: &Guard, seen: &mut HashSet<Identifier>) -> Prop {
+        match prop {
+            Prop::True | Prop::False => prop.clone(),
+            Prop::Var(Symbol::Name(id)) | Prop::Not(Symbol::Name(id)) => {
+                let result = 'result: {
+                    if !seen.insert(id.clone()) {
+                        break 'result Prop::False;
+                    }
+                    if guard.is_true(id) {
+                        break 'result Prop::True;
+                    }
+                    if guard.is_false(id) {
+                        break 'result Prop::False;
+                    }
+                    let Some(info) = self.identifiers.get(id) else {
+                        break 'result Prop::Var(Symbol::Name(id.clone()));
+                    };
+                    let r= self.substitute_singletons(&info.guard, guard, seen);
+                    seen.remove(id);
+                    r
+                };
+                if prop.is_not() {
+                    result.not()
+                } else {
+                    result
+                }
+            }
+            Prop::Var(Symbol::Random { .. }) | Prop::Not(Symbol::Random { .. }) => prop.clone(),
+            Prop::And(et) => {
+                et.iter()
+                    .map(|prop| self.substitute_singletons(prop, guard, seen))
+                    .collect::<Vec<_>>()
+                    .simplify_and()
+            }
+            Prop::Or(vel) => {
+                vel.iter()
+                    .map(|prop| self.substitute_singletons(prop, guard, seen))
+                    .collect::<Vec<_>>()
+                    .simplify_or()
+            }
+        }
     }
 
-    fn check_live_rec(&self, id: &Identifier, seen: &mut HashSet<Identifier>) -> Liveness {
+    pub fn check_live(&self, id: &Identifier) -> Liveness {
         let guard = self.guard();
+        let var_guard = self.substitute_singletons(&Prop::from_id(id), &guard, &mut HashSet::new());
+        let prop = var_guard.simplify(&guard);
 
-        if guard.is_true(id) {
-            return Liveness::Live;
-        }
-        if guard.is_false(id) {
-            return Liveness::Dead;
-        }
-
-        let Some(info) = self.identifiers.get(id) else {
-            if id.is_default_name() {
-                return Liveness::Maybe;
-            }
-            return Liveness::Dead;
-        };
-
-        let prop = info.guard.simplify(&guard);
-        drop(guard);
         match prop {
             Prop::True => Liveness::Live,
             Prop::False => Liveness::Dead,
-            Prop::Var(sym) => match sym {
-                Symbol::Name(id) => {
-                    if seen.contains(&id) {
-                        Liveness::Dead
-                    } else {
-                        seen.insert(id.clone());
-                        self.check_live_rec(&id, seen)
-                    }
-                },
-                Symbol::Random { .. } => Liveness::Maybe
-            },
-            Prop::Not(sym) => match sym {
-                Symbol::Name(id) => {
-                    if seen.contains(&id) {
-                        Liveness::Dead
-                    } else {
-                        seen.insert(id.clone());
-                        self.check_live_rec(&id, seen).invert()
-                    }
-                },
-                Symbol::Random { .. } => Liveness::Maybe
+            Prop::Var(Symbol::Name(id)) => {
+                if id.is_default_name() {
+                    Liveness::Maybe
+                } else {
+                    Liveness::Dead
+                }
             }
             _ => Liveness::Maybe,
         }

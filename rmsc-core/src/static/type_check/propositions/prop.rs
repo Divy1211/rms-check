@@ -87,6 +87,10 @@ impl BitOr for Prop {
 }
 
 impl Prop {
+    pub fn is_not(&self) -> bool {
+        matches!(self, Prop::Not(_))
+    }
+
     pub fn from_name(name: &str) -> Prop {
         Prop::Var(Symbol::from_name(name))
     }
@@ -153,28 +157,46 @@ impl Simplifiable for Vec<Prop> {
         let mut symbols = HashSet::with_capacity(self.len());
         let mut blocks = HashSet::with_capacity(self.len());
 
-        for prop in &self {
+        let mut removal = HashSet::with_capacity(self.len());
+        let mut do_removal = false;
+
+        for (i, prop) in self.iter().enumerate() {
             match prop {
                 Prop::True => {},
                 Prop::False => return Prop::False,
                 Prop::Not(s) | Prop::Var(s) => match s {
                     Symbol::Name(id) => {
                         /* A.A' = 0 */
-                        if symbols.contains(id) {
+                        if symbols.contains(&(id, !prop.is_not())) {
                             return Prop::False;
                         }
-                        symbols.insert(id);
+                        symbols.insert((id, prop.is_not()));
                     }
                     Symbol::Random { block, .. } => {
                         /* P_in(x).P_im(x) = 0 */
-                        if blocks.contains(block) {
+                        if blocks.contains(&(block, false)) && !prop.is_not() {
                             return Prop::False;
                         }
-                        blocks.insert(block);
+                        /* P_in(x).P'_im(x) = P_in(x) */
+                        /* if we encounter any regular P(x) blocks, remove any complimentary ones */
+                        if !prop.is_not() {
+                            do_removal = true;
+                        } else {
+                            removal.insert(i);
+                        }
+                        blocks.insert((block, prop.is_not()));
                     }
                 }
                 _ => unreachable!("Internal Error: Propositions are always in DNF")
             }
+        }
+
+        if do_removal {
+            self = self
+                .into_iter()
+                .enumerate()
+                .filter_map(|(i, x)| if removal.contains(&i) { None } else { Some(x) })
+                .collect()
         }
 
         Prop::And(self)
@@ -193,23 +215,31 @@ impl Simplifiable for Vec<Prop> {
         let mut symbols = HashSet::with_capacity(self.len());
         let mut blocks = HashMap::with_capacity(self.len());
 
-        for prop in &self {
+        let mut removal = HashSet::with_capacity(self.len());
+
+        for (i, prop) in self.iter().enumerate() {
             match prop {
                 Prop::True => return Prop::True,
                 Prop::False => {},
                 Prop::Not(s) | Prop::Var(s) => match s {
                     Symbol::Name(id) => {
                         /* A + A' = 1 */
-                        if symbols.contains(id) {
+                        if symbols.contains(&(id, !prop.is_not())) {
                             return Prop::True;
                         }
-                        symbols.insert(id);
+                        symbols.insert((id, prop.is_not()));
                     }
                     Symbol::Random { block, arm, chance } => {
                         /* P_in(x1) + P_im(x2) = P_inm(x1 + x2) */
-                        let entry = blocks.entry(block).or_insert((*arm, *chance));
-                        if entry.0 != *arm {
+                        let entry = blocks.entry(block).or_insert((*arm, 0));
+                        if !prop.is_not() {
                             entry.1 += *chance;
+                        } else {
+                            /* P'_in(x1) + P'_im(x2) = 1 */
+                            removal.insert(i);
+                            if removal.len() > 1 {
+                                return Prop::True;
+                            }
                         }
                         if entry.1 >= 100 {
                             return Prop::True;

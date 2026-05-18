@@ -28,4 +28,22 @@ if I
     #const H 10
 endif
 
+if 1_PLAYER_GAME
+    #const J 10
+endif
+
+if A
+    #const K 10
+elseif B
+    #const K 10
+endif
+
+if A
+    #const L 10
+endif
+
+if B
+    #const L 10
+endif
+
 #include_drs "liveness_test.inc"

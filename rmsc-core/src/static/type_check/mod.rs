@@ -72,4 +72,19 @@ mod test {
     fn test_is_live_i() {
         assert_eq!(TYPE_ENV.check_live(&Identifier::new("I")), Liveness::Dead)
     }
+
+    #[test]
+    fn test_is_live_j() {
+        assert_eq!(TYPE_ENV.check_live(&Identifier::new("J")), Liveness::Maybe)
+    }
+
+    #[test]
+    fn test_is_live_k() {
+        assert_eq!(TYPE_ENV.check_live(&Identifier::new("K")), Liveness::Live)
+    }
+
+    #[test]
+    fn test_is_live_l() {
+        assert_eq!(TYPE_ENV.check_live(&Identifier::new("L")), Liveness::Live)
+    }
 }

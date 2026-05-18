@@ -1,17 +1,12 @@
 start_random
     percent_chance 50 #const A 10
-    percent_chance 50 #const A 20
+    percent_chance 50 #const B 20
 end_random
 
-start_random
-    percent_chance 50 #const B 10
-    percent_chance 50 #const C 10
-end_random
-
-if B
-    create_terrain B
+if A
+    #const C 10
+elseif B
+    #const C 10
 endif
 
-if D
-    create_terrain D
-endif
+create_terrain C {}
