@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use rmsc_core::r#static::info::{gen_errs_from_path, gen_errs_from_src, AstCache, AstMap, Error, SrcCache, TypeEnv};
 
 use crate::cli::parse_args;
-use crate::fmt::{print_parse_errs, print_xs_errs};
+use crate::fmt::{print_parse_errs, print_rms_errs};
 
 mod cli;
 mod fmt;
@@ -33,13 +33,16 @@ fn main() {
     let new_errs = check_file(&filepath, &mut type_env, &mut ast_cache, &mut src_cache);
     has_errors =  has_errors || new_errs;
 
-    for (filepath, errs) in type_env.errs() {
+    let mut errs = type_env.errs().iter().collect::<Vec<_>>();
+    errs.sort_by(|(a, _), (b, _)| a.cmp(b));
+
+    for (filepath, errs) in errs {
         if errs.is_empty() {
             continue;
         } else if filepath == &random_map_def_path {
             panic!("random_map.def can't produce errors")
         }
-        let new_errs = print_xs_errs(filepath, errs, &ignores);
+        let new_errs = print_rms_errs(filepath, errs, &ignores);
         has_errors = has_errors || new_errs;
     }
 

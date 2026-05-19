@@ -7,7 +7,7 @@ use ariadne::{Color, Fmt, Label, Report, ReportKind, Source};
 use crate::fmt::msg_fmt::msg_fmt;
 use rmsc_core::r#static::info::{ParseError, RmsError};
 
-pub fn print_xs_errs(path: &PathBuf, errs: &Vec<RmsError>, ignores: &HashSet<u32>) -> bool {
+pub fn print_rms_errs(path: &PathBuf, errs: &Vec<RmsError>, ignores: &HashSet<u32>) -> bool {
     let filename = &path.display().to_string();
     let src = &fs::read_to_string(&path).expect("Infallible: If we are here, the file was read previously");
     
