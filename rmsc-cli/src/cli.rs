@@ -6,7 +6,7 @@ use rmsc_core::utils::warnings_from_str;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "xs-check", about = env!("CARGO_PKG_DESCRIPTION"))]
+#[structopt(name = "rms-check", about = env!("CARGO_PKG_DESCRIPTION"))]
 struct Opt {
     #[structopt(parse(from_os_str))]
     filepath: Option<PathBuf>,
@@ -42,7 +42,7 @@ struct Opt {
 include!(concat!(env!("OUT_DIR"), "/build_date.rs"));
 
 fn print_info() {
-    let name = "xs-check";
+    let name = "rms-check";
     let version = env!("CARGO_PKG_VERSION");
     let authors = env!("CARGO_PKG_AUTHORS");
     let description = env!("CARGO_PKG_DESCRIPTION");
