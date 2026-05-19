@@ -217,7 +217,7 @@ impl TypeEnv {
             Prop::True => Liveness::Live,
             Prop::False => Liveness::Dead,
             Prop::Var(Symbol::Name(id)) => {
-                if id.is_default_name() || self.identifiers.contains_key(&id) {
+                if /*id.is_default_name() ||*/ self.identifiers.contains_key(&id) {
                     Liveness::Maybe
                 } else {
                     Liveness::Dead

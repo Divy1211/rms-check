@@ -1,0 +1,177 @@
+/* game modes */
+start_random
+    percent_chance 9 #define DEATH_MATCH
+    percent_chance 9 #define REGICIDE
+    percent_chance 9 #define CAPTURE_THE_RELIC
+    percent_chance 9 #define CAPTURE_RELICS
+    percent_chance 8 #define RANDOM_MAP
+    percent_chance 8 #define TURBO_RANDOM_MAP
+    percent_chance 8 #define KING_OT_HILL
+    percent_chance 8 #define WONDER_RACE
+    percent_chance 8 #define DEFEND_WONDER
+    percent_chance 8 #define EMPIRE_WARS
+    percent_chance 8 #define BATTLE_ROYALE
+    percent_chance 8 #define SUDDEN_DEATH
+end_random
+
+/* legacy map sizes */
+start_random
+    percent_chance 15 #define TINY_MAP
+    percent_chance 15 #define SMALL_MAP
+    percent_chance 14 #define MEDIUM_MAP
+    percent_chance 14 #define LARGE_MAP
+    percent_chance 14 #define HUGE_MAP
+    percent_chance 14 #define GIGANTIC_MAP
+    percent_chance 14 #define LUDIKRIS_MAP
+end_random
+
+/* map sizes */
+start_random
+    percent_chance 8 #define MAPSIZE_MINI
+    percent_chance 8 #define MAPSIZE_TINY
+    percent_chance 7 #define MAPSIZE_SMALL
+    percent_chance 7 #define MAPSIZE_MEDIUM
+    percent_chance 7 #define MAPSIZE_NORMAL
+    percent_chance 7 #define MAPSIZE_LARGE
+    percent_chance 7 #define MAPSIZE_HUGE
+    percent_chance 7 #define MAPSIZE_GIANT
+    percent_chance 7 #define MAPSIZE_MASSIVE
+    percent_chance 7 #define MAPSIZE_ENORMOUS
+    percent_chance 7 #define MAPSIZE_COLOSSAL
+    percent_chance 7 #define MAPSIZE_INCREDIBLE
+    percent_chance 7 #define MAPSIZE_MONSTROUS
+    percent_chance 7 #define MAPSIZE_LUDICROUS
+end_random
+
+/* starting resources */
+start_random
+    percent_chance 17 #define HIGH_RESOURCES
+    percent_chance 17 #define MEDIUM_RESOURCES
+    percent_chance 17 #define LOW_RESOURCES
+    percent_chance 17 #define DEFAULT_RESOURCES
+    percent_chance 16 #define INFINITE_RESOURCES
+    percent_chance 16 #define RANDOM_RESOURCES
+end_random
+
+/* age start */
+start_random
+    percent_chance 20 #define DARK_AGE_START
+    percent_chance 20 #define FEUDAL_AGE_START
+    percent_chance 20 #define CASTLE_AGE_START
+    percent_chance 20 #define IMPERIAL_AGE_START
+    percent_chance 20 #define POST_IMPERIAL_AGE_START
+end_random
+
+/* lobby settings */
+start_random
+    percent_chance 20
+        #define FIXED_POSITIONS
+        #define TURBO_MODE
+        #define TEAM_POSITIONS
+        #define FULL_TECH_TREE
+        #define AI_PLAYERS
+        #define SOLID_FARMS
+        #define ANTIQUITY_MODE
+
+        #define UP_AVAILABLE
+        #define UP_EXTENSION
+        #define DE_AVAILABLE
+        #define DE_GAME_ROME
+        #define DE_GAME_AGE2
+end_random
+
+/* player count */
+start_random
+    percent_chance 13 #define 1_PLAYER_GAME
+    percent_chance 13 #define 2_PLAYER_GAME
+    percent_chance 13 #define 3_PLAYER_GAME
+    percent_chance 13 #define 4_PLAYER_GAME
+    percent_chance 12 #define 5_PLAYER_GAME
+    percent_chance 12 #define 6_PLAYER_GAME
+    percent_chance 12 #define 7_PLAYER_GAME
+    percent_chance 12 #define 8_PLAYER_GAME
+end_random
+
+/* team count */
+start_random
+    percent_chance 20 #define 0_TEAM_GAME
+    percent_chance 20 #define 1_TEAM_GAME
+    percent_chance 20 #define 2_TEAM_GAME
+    percent_chance 20 #define 3_TEAM_GAME
+    percent_chance 20 #define 4_TEAM_GAME
+end_random
+
+/* player/team sizes */
+start_random
+    percent_chance 20
+        #define PLAYER1_TEAM0
+        #define PLAYER1_TEAM1
+        #define PLAYER1_TEAM2
+        #define PLAYER1_TEAM3
+        #define PLAYER1_TEAM4
+        #define PLAYER2_TEAM0
+        #define PLAYER2_TEAM1
+        #define PLAYER2_TEAM2
+        #define PLAYER2_TEAM3
+        #define PLAYER2_TEAM4
+        #define PLAYER3_TEAM0
+        #define PLAYER3_TEAM1
+        #define PLAYER3_TEAM2
+        #define PLAYER3_TEAM3
+        #define PLAYER3_TEAM4
+        #define PLAYER4_TEAM0
+        #define PLAYER4_TEAM1
+        #define PLAYER4_TEAM2
+        #define PLAYER4_TEAM3
+        #define PLAYER4_TEAM4
+        #define PLAYER5_TEAM0
+        #define PLAYER5_TEAM1
+        #define PLAYER5_TEAM2
+        #define PLAYER5_TEAM3
+        #define PLAYER5_TEAM4
+        #define PLAYER6_TEAM0
+        #define PLAYER6_TEAM1
+        #define PLAYER6_TEAM2
+        #define PLAYER6_TEAM3
+        #define PLAYER6_TEAM4
+        #define PLAYER7_TEAM0
+        #define PLAYER7_TEAM1
+        #define PLAYER7_TEAM2
+        #define PLAYER7_TEAM3
+        #define PLAYER7_TEAM4
+        #define PLAYER8_TEAM0
+        #define PLAYER8_TEAM1
+        #define PLAYER8_TEAM2
+        #define PLAYER8_TEAM3
+        #define PLAYER8_TEAM4
+
+        #define TEAM0_SIZE0
+        #define TEAM0_SIZE1
+        #define TEAM0_SIZE2
+        #define TEAM0_SIZE3
+        #define TEAM0_SIZE4
+        #define TEAM0_SIZE5
+        #define TEAM0_SIZE6
+        #define TEAM0_SIZE7
+        #define TEAM0_SIZE8
+        #define TEAM1_SIZE0
+        #define TEAM1_SIZE2
+        #define TEAM1_SIZE3
+        #define TEAM1_SIZE4
+        #define TEAM1_SIZE5
+        #define TEAM1_SIZE6
+        #define TEAM1_SIZE7
+        #define TEAM1_SIZE8
+        #define TEAM2_SIZE0
+        #define TEAM2_SIZE2
+        #define TEAM2_SIZE3
+        #define TEAM2_SIZE4
+        #define TEAM2_SIZE5
+        #define TEAM2_SIZE6
+        #define TEAM3_SIZE0
+        #define TEAM3_SIZE2
+        #define TEAM3_SIZE3
+        #define TEAM3_SIZE4
+        #define TEAM4_SIZE0
+        #define TEAM4_SIZE2
+end_random

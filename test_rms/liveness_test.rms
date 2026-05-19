@@ -46,4 +46,54 @@ if C
     #const L 10
 endif
 
+if 1_PLAYER_GAME
+    #const M 10
+elseif 2_PLAYER_GAME
+    #const M 10
+elseif 3_PLAYER_GAME
+    #const M 10
+elseif 4_PLAYER_GAME
+    #const M 10
+elseif 5_PLAYER_GAME
+    #const M 10
+elseif 6_PLAYER_GAME
+    #const M 10
+elseif 7_PLAYER_GAME
+    #const M 10
+elseif 8_PLAYER_GAME
+    #const M 10
+endif
+
+if 1_PLAYER_GAME
+    #const N 10
+endif
+
+if 2_PLAYER_GAME
+    #const N 10
+endif
+
+if 3_PLAYER_GAME
+    #const N 10
+endif
+
+if 4_PLAYER_GAME
+    #const N 10
+endif
+
+if 5_PLAYER_GAME
+    #const N 10
+endif
+
+if 6_PLAYER_GAME
+    #const N 10
+endif
+
+if 7_PLAYER_GAME
+    #const N 10
+endif
+
+if 8_PLAYER_GAME
+    #const N 10
+endif
+
 #include_drs "liveness_test.inc"

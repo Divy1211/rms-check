@@ -20,9 +20,9 @@ pub fn rms_tc_expr(
     Expr::Identifier(id) => {
         let liveness = type_env.check_live(id);
         let Some(IdInfo { type_, ..}) = type_env.get(id) else {
-            if id.is_default_name() {
-                return Some(Type::Label);
-            }
+            // if id.is_default_name() {
+            //     return Some(Type::Label);
+            // }
 
             /* Something like: if D create_terrain D { ... } endif should not issue an undefined name error */
             if liveness == Liveness::Live {
