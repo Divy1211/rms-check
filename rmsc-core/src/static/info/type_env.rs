@@ -37,7 +37,10 @@ pub struct TypeEnv {
     pub include_dirs: Arc<Vec<PathBuf>>,
     pub dependencies: Option<HashMap<PathBuf, HashSet<PathBuf>>>,
 
-    pub last_block: u32
+    pub last_block: u32,
+
+    pub skip_includes: bool,
+    pub check_dead_paths: bool,
 }
 
 pub struct TempIgnore {
@@ -90,7 +93,7 @@ impl TypeEnv {
         &self.errs
     }
     
-    pub fn new(include_dirs: Vec<PathBuf>) -> Self {
+    pub fn new(include_dirs: Vec<PathBuf>, check_dead_paths: bool, skip_includes: bool) -> Self {
         Self {
             identifiers: HashMap::new(),
             guard: Arc::new(RwLock::new(Guard::new())),
@@ -102,6 +105,9 @@ impl TypeEnv {
             current_ignores: Arc::new(RwLock::new(None)),
 
             last_block: 0,
+
+            check_dead_paths,
+            skip_includes,
         }
     }
 

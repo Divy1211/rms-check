@@ -6,7 +6,7 @@ fn main() {
     let path = r"C:\Users\Divy\RustroverProjects\rms-check\test_rms\test.rms";
     let path = PathBuf::from(path);
 
-    let mut type_env= TypeEnv::new(vec![]);
+    let mut type_env= TypeEnv::new(vec![], false, false);
     let mut ast_cache = AstMap::new();
     let mut src_cache = AstMap::new();
 

@@ -13,6 +13,12 @@ struct Opt {
     
     #[structopt(short, long, help = "Show binary version & info")]
     version: bool,
+
+    #[structopt(short, long, help = "Skip checking include_drs files")]
+    skip_includes: bool,
+    
+    #[structopt(short, long, help = "Enable checking code paths that are definitely dead")]
+    check_dead_paths: bool,
     
     #[structopt(
         short,
@@ -52,7 +58,7 @@ fn print_info() {
     println!("Compiled: {BUILD_DATE}");
 }
 
-pub fn parse_args() -> Option<(PathBuf, HashSet<u32>, Option<PathBuf>, Vec<PathBuf>)> {
+pub fn parse_args() -> Option<(PathBuf, HashSet<u32>, Option<PathBuf>, Vec<PathBuf>, bool,  bool)> {
     let opt = Opt::from_args();
     if opt.version {
         print_info();
@@ -78,7 +84,9 @@ pub fn parse_args() -> Option<(PathBuf, HashSet<u32>, Option<PathBuf>, Vec<PathB
                 filepath,
                 opt.ignores.unwrap_or_else(HashSet::new),
                 opt.extra_prelude_path,
-                opt.include_dirs
+                opt.include_dirs,
+                opt.skip_includes,
+                opt.check_dead_paths,
             ))
         }
     }

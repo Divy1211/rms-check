@@ -1,0 +1,3 @@
+if B
+    create_terrain C {}
+endif

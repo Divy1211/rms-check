@@ -10,12 +10,12 @@ mod cli;
 mod fmt;
 
 fn main() {
-    let (filepath, ignores, extra_prelude_path, include_dirs) = match parse_args() {
+    let (filepath, ignores, extra_prelude_path, include_dirs, skip_includes, check_dead_paths) = match parse_args() {
         Some(filepath) => { filepath }
-        None => { return; },
+        None => { return; }
     };
     
-    let mut type_env= TypeEnv::new(include_dirs);
+    let mut type_env= TypeEnv::new(include_dirs, check_dead_paths, skip_includes);
     let mut ast_cache = AstMap::new();
     let mut src_cache = AstMap::new();
     

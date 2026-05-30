@@ -5,17 +5,7 @@ use chumsky::container::Container;
 use crate::doxygen::Doc;
 use crate::parsing::{AstNode, Expr, Identifier, Literal, Type};
 use crate::parsing::{Spanned};
-use crate::r#static::info::{
-    gen_errs_from_path,
-    AstCacheRef,
-    Error,
-    IdInfo,
-    SrcCacheRef,
-    SrcLoc,
-    TypeEnv,
-    WarningKind,
-    RmsError,
-};
+use crate::r#static::info::{gen_errs_from_path, AstCacheRef, Error, IdInfo, SrcCacheRef, SrcLoc, TypeEnv, WarningKind, RmsError, Liveness};
 use crate::r#static::type_check::expression::rms_tc_expr;
 use crate::r#static::type_check::util::{combine_results};
 
@@ -75,7 +65,11 @@ pub fn rms_tc_stmt(
                 if inc_path.is_file() {
                     deps.push(inc_path.clone());
                     drop(_temp_ignore);
-                    result = Some(gen_errs_from_path(&inc_path, type_env, ast_cache, src_cache));
+                    if type_env.skip_includes {
+                        result = Some(Ok(()));
+                    } else {
+                        result = Some(gen_errs_from_path(&inc_path, type_env, ast_cache, src_cache));
+                    }
                     break
                 }
             }
@@ -160,6 +154,7 @@ pub fn rms_tc_stmt(
             let _nested = type_env.nested_guard();
 
             let mut results = Vec::with_capacity(consequents.len() + 1);
+            let mut else_dead = false;
             for ((condition, condition_span), (body, _span)) in consequents {
                 let id = match condition {
                     Expr::Identifier(id) => Cow::Borrowed(id),
@@ -172,24 +167,29 @@ pub fn rms_tc_stmt(
                         Cow::Owned(Identifier::new("__UNKNOWN__"))
                     }
                 };
-                type_env.truthify(&id.0);
-                for stmt in body {
-                    results.push(rms_tc_stmt(
-                        path, stmt, type_env, ast_cache, src_cache, comments, comment_pos,
-                        false
-                    ));
+
+                let liveness = type_env.check_live(&id);
+                else_dead |= liveness == Liveness::Live;
+                if liveness != Liveness::Dead || type_env.check_dead_paths {
+                    type_env.truthify(&id.0);
+                    for stmt in body {
+                        results.push(rms_tc_stmt(
+                            path, stmt, type_env, ast_cache, src_cache, comments, comment_pos,
+                            false
+                        ));
+                    }
+                    type_env.falsify(&id.0);
                 }
-                type_env.falsify(&id.0);
             }
 
-            if let Some((body, _span)) = alternate {
+            if (!else_dead || type_env.check_dead_paths) && let Some((body, _span)) = alternate {
                 for stmt in body {
                     results.push(rms_tc_stmt(
                         path, stmt, type_env, ast_cache, src_cache, comments, comment_pos,
                         false
                     ));
                 }
-            };
+            }
 
             combine_results(results)
         }
