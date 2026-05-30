@@ -1,3 +1,15 @@
+param(
+    [string]$Tag
+)
+
+if (-not $Tag) {
+    $Tag = Read-Host "RMSC enter Release Tag"
+    if ([string]::IsNullOrWhiteSpace($Tag)) {
+        Write-Host "No tag provided, aborting"
+        exit 1
+    }
+}
+
 $ErrorActionPreference = "Stop"
 
 Set-Location $PSScriptRoot
@@ -43,18 +55,12 @@ git add .
 git commit -m "Bumpver"
 Assert-Success "Git commit failed"
 
-$tag = Read-Host "RMSC Enter release tag (e.g. v1.2.3-alpha)"
-if ([string]::IsNullOrWhiteSpace($tag)) {
-    Write-Host "No tag provided, aborting"
-    exit 1
-}
-
 if (git tag -l $tag) {
     Write-Host "Tag already exists"
     exit 1
 }
 
-git tag -a $tag -m "Release $tag"
+git tag -a $Tag -m "Release $Tag"
 
 git push
 Assert-Success "Git push failed"
