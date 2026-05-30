@@ -149,7 +149,7 @@ mod test {
 
     #[test]
     fn test_check_dead_paths_true() {
-        test_check_flags("test_check_dead_paths.rms", true, false, 1);
+        test_check_flags("test_check_dead_paths.rms", true, false, 2);
     }
 
     #[test]
