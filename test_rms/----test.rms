@@ -1,5 +1,5 @@
-#const だいへん 10 /* yES */
+#const 5+_players 10 /* yES */
 
-if だいへん
+if 5+_players
     create_terrain A {}
 endif

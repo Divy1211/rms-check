@@ -13,14 +13,7 @@ pub fn include<'tokens>() -> impl Parser<
 > + Clone {
     let path_str = select! { Token::Literal(Literal::Str(path)) => path };
     
-    let path_bare = select! { Token::Identifier(part) => part.to_string() }
-        .separated_by(one_of([Token::BSlash, Token::FSlash]))
-        .collect::<Vec<String>>()
-        .then_ignore(just(Token::Dot))
-        .then(select! { Token::Identifier(part) => part.to_string() })
-        .map(|(parts, ext)| {
-            format!("{}.{}", parts.join("/"), ext)
-        });
+    let path_bare = select! { Token::Identifier(part) => part.to_string() };
     let path = path_str.or(path_bare);
 
     one_of([Token::IncludeXs, Token::IncludeDrs]).then(path)

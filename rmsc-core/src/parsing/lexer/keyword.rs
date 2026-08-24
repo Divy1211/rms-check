@@ -11,25 +11,25 @@ pub fn keyword<'src>() -> impl Parser<
         .repeated()
         .at_least(1)
         .collect::<String>()
-        .map(|ident| match ident.as_str() {
-            "#const"                              => Token::Const,
-            "#define"                             => Token::Define,
-            "#undefine"                           => Token::Undefine,
-    
-            "if"                                  => Token::If,
-            "elseif"                              => Token::ElseIf,
-            "else"                                => Token::Else,
-            "endif"                               => Token::EndIf,
-    
-            "start_random"                        => Token::StartRandom,
-            "percent_chance"                      => Token::PercentChance,
-            "end_random"                          => Token::EndRandom,
-    
-            "rnd"                                 => Token::Rnd,
-    
-            "#include_drs"                        => Token::IncludeDrs,
-            "#include_xs"                         => Token::IncludeXs,
-    
+        .try_map(|ident, span| match ident.as_str() {
+            "#const"                              => Ok(Token::Const),
+            "#define"                             => Ok(Token::Define),
+            "#undefine"                           => Ok(Token::Undefine),
+
+            "if"                                  => Ok(Token::If),
+            "elseif"                              => Ok(Token::ElseIf),
+            "else"                                => Ok(Token::Else),
+            "endif"                               => Ok(Token::EndIf),
+
+            "start_random"                        => Ok(Token::StartRandom),
+            "percent_chance"                      => Ok(Token::PercentChance),
+            "end_random"                          => Ok(Token::EndRandom),
+
+            "rnd"                                 => Ok(Token::Rnd),
+
+            "#include_drs"                        => Ok(Token::IncludeDrs),
+            "#include_xs"                         => Ok(Token::IncludeXs),
+
             /* Player Setup */
             "random_placement"
             | "direct_placement"
@@ -46,14 +46,14 @@ pub fn keyword<'src>() -> impl Parser<
             | "terrain_state"
             | "weather_type"
             | "water_definition"
-    
+
             /* Land Generation */
             | "base_terrain"
             | "base_layer"
             | "enable_waves"
             | "create_player_lands"
             | "create_land"
-    
+
             | "terrain_type"
             | "land_percent"
             | "number_of_tiles"
@@ -78,10 +78,10 @@ pub fn keyword<'src>() -> impl Parser<
             | "other_zone_avoidance_distance"
             | "min_placement_distance"
             | "land_id"
-    
+
             /* Elevation Generation */
             | "create_elevation"
-    
+
             | "number_of_clumps"
             | "set_scale_by_size"
             | "set_scale_by_groups"
@@ -95,11 +95,11 @@ pub fn keyword<'src>() -> impl Parser<
             | "cliff_curliness"
             | "min_distance_cliffs"
             | "min_terrain_distance"
-    
+
             /* Terrain Generation */
             | "color_correction"
             | "create_terrain"
-    
+
             | "beach_terrain"
             | "terrain_mask"
             | "spacing_to_other_terrain_types"
@@ -107,28 +107,28 @@ pub fn keyword<'src>() -> impl Parser<
             | "set_flat_terrain_only"
             | "set_avoid_player_start_areas"
             | "height_limits"
-    
+
             /* Connection Generation */
             | "accumulate_connections"
-    
+
             | "create_connect_all_players_land"
             | "create_connect_teams_lands"
             | "create_connect_all_lands"
             | "create_connect_same_land_zones"
             | "create_connect_land_zones"
             | "create_connect_to_nonplayer_land"
-    
+
             | "default_terrain_replacement"
             | "replace_terrain"
             | "terrain_cost"
             | "terrain_size"
-    
+
             /* Object Generation */
             | "create_object"
             | "create_object_group"
             | "create_actor_area"
             | "add_object"
-    
+
             | "number_of_objects"
             | "number_of_groups"
             | "group_variance"
@@ -174,9 +174,9 @@ pub fn keyword<'src>() -> impl Parser<
             | "avoid_actor_area"
             | "avoid_all_actor_areas"
             | "set_facet"
-            | "match_player_civ"                  => Token::Command(Identifier(ident)),
-    
-            _                                     => Token::Identifier(Identifier(ident))
+            | "match_player_civ"                  => Ok(Token::Command(Identifier(ident))),
+
+            _                                     => Err(Rich::custom(span, ""))
         }
     )
 }

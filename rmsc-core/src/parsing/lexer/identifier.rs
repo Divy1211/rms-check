@@ -1,5 +1,5 @@
 use chumsky::prelude::*;
-
+use chumsky::text::Char;
 use crate::parsing::lexer::token::Token;
 use crate::parsing::Span;
 
@@ -8,9 +8,8 @@ pub fn identifier<'src>() -> impl Parser<
 > {
     any()
         .filter(|c: &char| {
-            c.is_alphabetic()
-            || c.is_numeric()
-            || matches!(c, '_' | '\'' | '#' | '$' | '*' | '/' | '-' | '{' | '}' | '[' | ']' | '<' | '>')
+            !c.is_whitespace()
+            && !matches!(c, '<' | '>' | '(' | ')' | '{' | '}' | ';' | ':' | ',')
         })
         .repeated()
         .at_least(1)
