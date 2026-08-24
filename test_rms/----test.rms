@@ -1,0 +1,5 @@
+#const だいへん 10 /* yES */
+
+if だいへん
+    create_terrain A {}
+endif

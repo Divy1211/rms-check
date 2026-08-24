@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::fs;
 use std::path::PathBuf;
 
-use ariadne::{Color, Fmt, Label, Report, ReportKind, Source};
+use ariadne::{Color, Config, Fmt, IndexType, Label, Report, ReportKind, Source};
 
 use crate::fmt::msg_fmt::msg_fmt;
 use rmsc_core::r#static::info::{ParseError, RmsError};
@@ -23,6 +23,7 @@ pub fn print_rms_errs(path: &PathBuf, errs: &Vec<RmsError>, ignores: &HashSet<u3
         }
         found_errs = true;
         let report = Report::build(error.report_kind(), filename, error.span().start)
+            .with_config(Config::default().with_index_type(IndexType::Byte))
             .with_code(error.code())
             .with_message(error.kind());
         let report = match error {
@@ -114,6 +115,7 @@ pub fn print_parse_errs(path: &PathBuf, errs: &Vec<ParseError>) {
         let (span, msg) = (error.span(), error.msg());
         
         Report::build(ReportKind::Error, filename, span.start)
+            .with_config(Config::default().with_index_type(IndexType::Byte))
             .with_message(kind)
             .with_label(
                 Label::new((filename, span.start..span.end))

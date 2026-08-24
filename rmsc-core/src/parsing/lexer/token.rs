@@ -288,7 +288,7 @@ impl Display for Token {
             Token::Rnd => write!(f, "rnd"),
 
             Token::IncludeDrs => write!(f, "#include_drs"),
-            Token::IncludeXs => write!(f, "#include_xs"),
+            Token::IncludeXs => write!(f, "#includeXS"),
 
             // /* Player Setup */
             // Token::RandomPlacement => write!(f, "random_placement"),
