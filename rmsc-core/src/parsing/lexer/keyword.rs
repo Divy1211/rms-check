@@ -28,7 +28,7 @@ pub fn keyword<'src>() -> impl Parser<
             "rnd"                                 => Ok(Token::Rnd),
 
             "#include_drs"                        => Ok(Token::IncludeDrs),
-            "#include_xs"                         => Ok(Token::IncludeXs),
+            "#includeXS"                          => Ok(Token::IncludeXs),
 
             /* Player Setup */
             "random_placement"

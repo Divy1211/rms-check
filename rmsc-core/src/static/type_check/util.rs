@@ -43,7 +43,7 @@ pub fn arith_op(
 
     match (type1, type2) {
         (Type::Int, Type::Int) => { Some(Type::Int) }
-        (Type::Int, Type::Float) | (Type::Float, Type::Int) => {
+        (Type::Int, Type::Float) | (Type::Float, Type::Int) | (Type::Float, Type::Float) => {
             Some(Type::Float)
         }
         
