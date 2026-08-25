@@ -1,12 +1,13 @@
-start_random
-    percent_chance 50 #define A
-    percent_chance 50 #define B
-end_random
+#const A 10
+#const B 10
 
-if A
-    #const LENGTH 5.5
-endif
+create_object_group C {
+    add_object A
+    add_object B
+}
 
-#const AREA (LENGTH * LENGTH)
+create_object C {}
 
-create_object AREA {}
+create_terrain C {}
+
+#const D (C * C)

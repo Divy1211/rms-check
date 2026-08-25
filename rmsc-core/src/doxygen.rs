@@ -54,6 +54,9 @@ impl Doc {
             Type::Label => {
                 format!("```rms\n#define {}\n```", id.0)
             }
+            Type::ObjectGroup => {
+                format!("```rms\ncreate_object_group {}\n```", id.0)
+            }
             Type::Str => {
                 unreachable!("Internal Error: Type::Str")
             }

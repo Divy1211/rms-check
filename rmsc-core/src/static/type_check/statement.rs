@@ -239,14 +239,34 @@ pub fn rms_tc_stmt(
             }
             Ok(())
         },
-        AstNode::Command {name: (_name, _span), params} => {
+        AstNode::Command {name: (command_name, _span), params} => {
+            if command_name.0 == "create_object_group" && let Some((Expr::Identifier(name), name_span)) = params.first() {
+                let guard = type_env.guard.clone();
+                match type_env.identifiers.get_mut(name) {
+                    None => {
+                        println!("two");
+                        type_env.set(name, IdInfo::from(
+                            &Type::ObjectGroup,
+                            SrcLoc::from(path, name_span),
+                            &guard.read().expect("Not concurrent"),
+                        ));
+                    }
+                    Some(info) => {
+                        println!("three");
+                        info.join(&guard.read().expect("Not concurrent"));
+                    }
+                }
+            };
             for param in params {
                 let Some(type_) = rms_tc_expr(path, param, type_env) else {
                     return Ok(());
                 };
                 match type_ {
                     Type::Int | Type::Float => {},
-                    Type::Label | Type::Str => {
+                    Type::ObjectGroup if command_name.0 == "create_object" => {},
+                    Type::ObjectGroup if command_name.0 == "create_object_group" => {},
+                    Type::ObjectGroup if command_name.0 == "second_object" => {},
+                    _ => {
                         type_env.add_err(path, RmsError::type_mismatch(
                             &type_.to_string(),
                             "int | float",

@@ -7,6 +7,7 @@ pub enum Type {
     Float,
     Label,
     Str,
+    ObjectGroup,
 }
 
 impl Display for Type {
@@ -16,6 +17,7 @@ impl Display for Type {
             Type::Float => write!(f, "float"),
             Type::Label => write!(f, "label"),
             Type::Str => write!(f, "string"),
+            Type::ObjectGroup => write!(f, "object_group"),
         }
     }
 }
