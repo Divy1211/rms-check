@@ -1,1 +1,12 @@
-circle_radius rnd(32,34) 6
+start_random
+    percent_chance 50 #define A
+    percent_chance 50 #define B
+end_random
+
+if A
+    #const LENGTH 5.5
+endif
+
+#const AREA (LENGTH * LENGTH)
+
+create_object AREA {}
