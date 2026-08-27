@@ -115,6 +115,20 @@ pub fn rms_tc_stmt(
                     ));
                 }
                 Some(info) => {
+                    if info.type_ == Type::ObjectGroup {
+                        type_env.add_err(path, RmsError::warning(
+                            span,
+                            "{0} {1} will be overwritten by this {2}",
+                            vec!["object_group", &name.0, "#define"],
+                            WarningKind::ShadowedVarName
+                        ));
+                        type_env.set(name, IdInfo::from(
+                            &Type::Label,
+                            SrcLoc::from(path, name_span),
+                            &guard.read().expect("Not concurrent")
+                        ));
+                    }
+                    let info = type_env.get_mut(name).expect("borrow checker");
                     info.join(&guard.read().expect("Not concurrent"));
                 }
             }
@@ -132,11 +146,27 @@ pub fn rms_tc_stmt(
                         &guard.read().expect("Not concurrent"),
                     ));
                 }
-                Some(_info) => {
-                    if type_env.check_live(name) == Liveness::Live {
+                Some(info) => {
+                    let mut issue_second_warning = true;
+                    if info.type_ == Type::ObjectGroup {
                         type_env.add_err(path, RmsError::warning(
                             span,
-                            "Name {} is already defined and will not be overwritten",
+                            "{0} {1} will be overwritten by this {2}",
+                            vec!["object_group", &name.0, "#const"],
+                            WarningKind::ShadowedVarName
+                        ));
+                        issue_second_warning = false;
+                        type_env.set(name, IdInfo::from(
+                            &type_,
+                            SrcLoc::from(path, name_span),
+                            &guard.read().expect("Not concurrent"),
+                        ));
+                    }
+
+                    if issue_second_warning && type_env.check_live(name) == Liveness::Live {
+                        type_env.add_err(path, RmsError::warning(
+                            span,
+                            "Name {0} is already defined and will not be overwritten",
                             vec![&name.0],
                             WarningKind::ShadowedVarName
                         ));
@@ -165,7 +195,17 @@ pub fn rms_tc_stmt(
             let mut else_dead = false;
             for ((condition, condition_span), (body, _span)) in consequents {
                 let id = match condition {
-                    Expr::Identifier(id) => Cow::Borrowed(id),
+                    Expr::Identifier(id) => {
+                        if let Some(info) = type_env.identifiers.get(id) && info.type_ == Type::ObjectGroup {
+                            type_env.add_err(path, RmsError::warning(
+                                span,
+                                "{0} is an {1} and should not be used here",
+                                vec![&id.0, "object_group"],
+                                WarningKind::ObjectGroupNameInIf
+                            ));
+                        }
+                        Cow::Borrowed(id)
+                    },
                     _ => {
                         type_env.add_err(path, RmsError::syntax(
                             condition_span,
@@ -259,17 +299,12 @@ pub fn rms_tc_stmt(
                         ));
                     }
                     Some(_info) => {
-                        if type_env.check_live(name) == Liveness::Live {
-                            type_env.add_err(path, RmsError::warning(
-                                span,
-                                "Name {} is already defined and will not be overwritten",
-                                vec![&name.0],
-                                WarningKind::ShadowedVarName
-                            ));
-                        } else {
-                            let info = type_env.get_mut(name).expect("borrow checker");
-                            info.join(&guard.read().expect("Not concurrent"));
-                        }
+                        type_env.add_err(path, RmsError::warning(
+                            span,
+                            "Name {0} is already defined and will not be overwritten",
+                            vec![&name.0],
+                            WarningKind::ShadowedVarName
+                        ));
                     }
                 }
             };
@@ -283,12 +318,14 @@ pub fn rms_tc_stmt(
                     Type::ObjectGroup if command_name.0 == "create_object_group" => {},
                     Type::ObjectGroup if command_name.0 == "second_object" => {},
                     _ => {
-                        type_env.add_err(path, RmsError::type_mismatch(
-                            &type_.to_string(),
-                            "int | float",
-                            &param.1,
-                            None,
-                        ));
+                        if command_name.0 != "create_object_group" {
+                            type_env.add_err(path, RmsError::type_mismatch(
+                                &type_.to_string(),
+                                "int | float",
+                                &param.1,
+                                None,
+                            ));
+                        }
                     },
                 }
             }

@@ -25,6 +25,7 @@ pub enum RmsError {
 #[derive(Debug, Clone)]
 pub enum WarningKind {
     ShadowedVarName = 100,
+    ObjectGroupNameInIf = 101,
 
     UnknownWarningName = 1000,
 }
@@ -164,7 +165,8 @@ impl WarningKind {
 
     pub fn as_str(&self) -> &str {
         match self {
-            WarningKind::ShadowedVarName => { "TopStrInit" }
+            WarningKind::ShadowedVarName => { "ShadowedVarName" }
+            WarningKind::ObjectGroupNameInIf => { "ObjectGroupNameInIf" }
             WarningKind::UnknownWarningName => { "UnknownWarningName" }
         }
     }
@@ -172,6 +174,7 @@ impl WarningKind {
     pub fn from_name(name: &str) -> Option<WarningKind> {
         match name {
             "ShadowedVarName"          => { Some(WarningKind::ShadowedVarName) }
+            "ObjectGroupNameInIf"      => { Some(WarningKind::ObjectGroupNameInIf) }
             
             // UnknownWarningName cannot be ignored, so it is excluded here
             _                     => None
