@@ -56,7 +56,7 @@ impl BitAnd for Prop {
                 for prop in vel.iter_mut() {
                     *prop = std::mem::replace(prop, Prop::False) & p.clone();
                 }
-                vel.simplify_or()
+                vel.simplify_or(None)
             }
             (p1, p2) => unreachable!("Internal Error: Attempting to and {:?} {:?}. Too expensive", p1, p2),
         }
@@ -73,17 +73,17 @@ impl BitOr for Prop {
             (Prop::Or(mut vel), p @ (Prop::Var(_) | Prop::Not(_)))
             | (p @ (Prop::Var(_) | Prop::Not(_)), Prop::Or(mut vel)) => {
                 vel.push(p);
-                vel.simplify_or()
+                vel.simplify_or(None)
             }
             (Prop::Or(mut vel1), Prop::Or(mut vel2)) => {
                 vel1.append(&mut vel2);
-                vel1.simplify_or()
+                vel1.simplify_or(None)
             },
             (Prop::Or(mut vel), p @ Prop::And(_)) => {
                 vel.push(p);
-                vel.simplify_or()
+                vel.simplify_or(None)
             },
-            (p1, p2) => vec![p1, p2].simplify_or(),
+            (p1, p2) => vec![p1, p2].simplify_or(None),
         }
     }
 }
@@ -135,7 +135,7 @@ impl Prop {
                         v => { vel.push(v); }
                     }
                 }
-                vel.simplify_or()
+                vel.simplify_or(None)
             }
             Prop::Not(v) => {
                 guard.lookup(v).not()
@@ -146,7 +146,7 @@ impl Prop {
 
 pub trait Simplifiable {
     fn simplify_and(self) -> Prop;
-    fn simplify_or(self) -> Prop;
+    fn simplify_or(self, chance_increases: Option<&HashMap<u32, u32>>) -> Prop;
 }
 
 impl Simplifiable for Vec<Prop> {
@@ -197,22 +197,22 @@ impl Simplifiable for Vec<Prop> {
             }
         }
 
-        if do_removal && !removal.is_empty() {
-            self = self
-                .into_iter()
-                .enumerate()
-                .filter_map(|(i, x)| if removal.contains(&i) { None } else { Some(x) })
-                .collect()
-        }
+        self = self
+            .into_iter()
+            .enumerate()
+            .filter_map(|(i, x)| if do_removal && removal.contains(&i) || x == Prop::True { None } else { Some(x) })
+            .collect();
 
-        if self.len() == 1 {
+        if self.is_empty() {
+            return Prop::True;
+        } else if self.len() == 1 {
             return self.into_iter().next().unwrap();
         }
 
         Prop::And(self)
     }
 
-    fn simplify_or(mut self) -> Prop {
+    fn simplify_or(mut self, chance_increases: Option<&HashMap<u32, u32>>) -> Prop {
         /* A + A = A */
         self = self.into_iter().collect::<HashSet<_>>().into_iter().collect::<Vec<_>>();
 
@@ -262,7 +262,7 @@ impl Simplifiable for Vec<Prop> {
                             }
                             has_complimentary_random = true;
                         }
-                        if entry.1 >= 100 {
+                        if entry.1 + chance_increases.and_then(|p| p.get(block).copied()).unwrap_or(0) >= 100 {
                             return Prop::True;
                         }
                     }
@@ -271,23 +271,23 @@ impl Simplifiable for Vec<Prop> {
             }
         }
 
-        if !removal.is_empty() {
-            self = self
-                .into_iter()
-                .enumerate()
-                .filter_map(|(i, mut x)| if removal.contains(&i) {
-                    None
-                } else {
-                    if let Prop::Not(s) | Prop::Var(s) = &mut x
-                    && let Symbol::Random { block, arm, chance } = s {
-                        *chance = blocks.get(block).unwrap_or(&(*arm, *chance)).1;
-                    }
-                    Some(x)
-                })
-                .collect()
-        }
+        self = self
+            .into_iter()
+            .enumerate()
+            .filter_map(|(i, mut x)| if removal.contains(&i) || x == Prop::False {
+                None
+            } else {
+                if let Prop::Not(s) | Prop::Var(s) = &mut x
+                && let Symbol::Random { block, arm, chance } = s {
+                    *chance = blocks.get(block).unwrap_or(&(*arm, *chance)).1;
+                }
+                Some(x)
+            })
+            .collect();
 
-        if self.len() == 1 {
+        if self.is_empty() {
+            return Prop::True
+        } else if self.len() == 1 {
             return self.into_iter().next().unwrap();
         }
 

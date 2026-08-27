@@ -1,13 +1,15 @@
-#const A 10
-#const B 10
+start_random
+    percent_chance 33 #define A
+    percent_chance 33 #define B
+    percent_chance 34 #define C
+end_random
 
-create_object_group C {
-    add_object A
-    add_object B
-}
+if A     #const L 1
+elseif B #const L 2
+elseif C #const L 3
+endif
 
-create_object C {}
-
-create_terrain C {}
-
-#const D (C * C)
+if A
+else
+    #const P(L)
+endif

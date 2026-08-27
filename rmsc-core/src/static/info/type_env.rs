@@ -30,6 +30,7 @@ impl Liveness {
 pub struct TypeEnv {
     pub identifiers: HashMap<Identifier, IdInfo>,
     pub guard: Arc<RwLock<Guard>>,
+    pub chance_increases: HashMap<u32, u32>,
     pub errs: HashMap<PathBuf, Vec<RmsError>>,
     
     pub current_ignores: Arc<RwLock<Option<HashSet<u32>>>>,
@@ -87,6 +88,9 @@ impl TypeEnv {
     }
     pub fn falsify(&mut self, v: &str) {
         self.guard.write().expect("Not concurrent").falsify(self.last_block, v);
+        let Some(IdInfo { guard: Prop::Var(Symbol::Random { block, chance, .. }), .. }) = self.identifiers.get(&v.into()) else { return };
+        let chance_increases = self.chance_increases.entry(*block).or_insert(0);
+        *chance_increases += *chance;
     }
     
     pub fn errs(&self) -> &HashMap<PathBuf, Vec<RmsError>> {
@@ -97,6 +101,7 @@ impl TypeEnv {
         Self {
             identifiers: HashMap::new(),
             guard: Arc::new(RwLock::new(Guard::new())),
+            chance_increases: HashMap::new(),
             errs: HashMap::new(),
 
             include_dirs: Arc::new(include_dirs),
@@ -209,7 +214,7 @@ impl TypeEnv {
                 vel.iter()
                     .map(|prop| self.substitute_singletons(prop, guard, seen))
                     .collect::<Vec<_>>()
-                    .simplify_or()
+                    .simplify_or(Some(&self.chance_increases))
             }
         }
     }

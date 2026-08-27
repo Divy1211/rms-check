@@ -96,10 +96,21 @@ mod test {
         let p11 = Prop::from_block(1, 1, 33);
         let p12 = Prop::from_block(1, 2, 33);
         let p1c = Prop::from_block(1, 1, 66);
+        let p2c = Prop::from_block(1, 2, 66);
         let prop = a.clone() | p11 | p12;
         let guard = Guard::new();
 
-        assert_eq!(prop.simplify(&guard), p1c | a);
+        let e1 = a.clone() | p1c.clone();
+        let e2 = p1c | a.clone();
+        let e3 = a.clone() | p2c.clone();
+        let e4 = p2c | a;
+
+        let s = prop.simplify(&guard);
+
+        if s != e1 && s != e2 && s != e3 && s != e4 {
+            eprintln!("{s}");
+            assert!(false);
+        }
     }
 
     #[test]

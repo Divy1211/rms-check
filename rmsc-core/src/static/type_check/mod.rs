@@ -161,4 +161,14 @@ mod test {
     fn test_skip_inc_true() {
         test_check_flags("test_skip_inc.rms", false, true, 0);
     }
+
+    #[test]
+    fn test_unified_multiple_def() {
+        test_check_flags("unified_multiple_def.rms", false, false, 0);
+    }
+
+    #[test]
+    fn test_unified_random_else() {
+        test_check_flags("unified_random_else.rms", false, false, 0);
+    }
 }
