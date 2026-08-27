@@ -1,4 +1,5 @@
 use std::collections::{HashMap, HashSet};
+use std::collections::hash_map::Entry;
 use std::fmt::{Display, Formatter};
 use std::ops::{BitAnd, BitOr, Not};
 use crate::parsing::Identifier;
@@ -196,7 +197,7 @@ impl Simplifiable for Vec<Prop> {
             }
         }
 
-        if do_removal {
+        if do_removal && !removal.is_empty() {
             self = self
                 .into_iter()
                 .enumerate()
@@ -225,6 +226,7 @@ impl Simplifiable for Vec<Prop> {
         let mut blocks = HashMap::with_capacity(self.len());
 
         let mut removal = HashSet::with_capacity(self.len());
+        let mut has_complimentary_random = false;
 
         for (i, prop) in self.iter().enumerate() {
             match prop {
@@ -240,15 +242,25 @@ impl Simplifiable for Vec<Prop> {
                     }
                     Symbol::Random { block, arm, chance } => {
                         /* P_in(x1) + P_im(x2) = P_inm(x1 + x2) */
-                        let entry = blocks.entry(block).or_insert((*arm, 0));
+                        let (entry, new_block) = match blocks.entry(*block) {
+                            Entry::Vacant(entry) => {
+                                (entry.insert((*arm, 0)), true)
+                            }
+                            Entry::Occupied(entry) => {
+                                (entry.into_mut(), false)
+                            }
+                        };
                         if !prop.is_not() {
                             entry.1 += *chance;
+                            if !new_block {
+                                removal.insert(i);
+                            }
                         } else {
                             /* P'_in(x1) + P'_im(x2) = 1 */
-                            removal.insert(i);
-                            if removal.len() > 1 {
+                            if has_complimentary_random {
                                 return Prop::True;
                             }
+                            has_complimentary_random = true;
                         }
                         if entry.1 >= 100 {
                             return Prop::True;
@@ -257,6 +269,26 @@ impl Simplifiable for Vec<Prop> {
                 }
                 _ => {}
             }
+        }
+
+        if !removal.is_empty() {
+            self = self
+                .into_iter()
+                .enumerate()
+                .filter_map(|(i, mut x)| if removal.contains(&i) {
+                    None
+                } else {
+                    if let Prop::Not(s) | Prop::Var(s) = &mut x
+                    && let Symbol::Random { block, arm, chance } = s {
+                        *chance = blocks.get(block).unwrap_or(&(*arm, *chance)).1;
+                    }
+                    Some(x)
+                })
+                .collect()
+        }
+
+        if self.len() == 1 {
+            return self.into_iter().next().unwrap();
         }
 
         Prop::Or(self)

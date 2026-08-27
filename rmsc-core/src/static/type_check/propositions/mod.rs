@@ -91,6 +91,18 @@ mod test {
     }
 
     #[test]
+    fn test_simplify_reduce_random_or() {
+        let a = Prop::from_name("A");
+        let p11 = Prop::from_block(1, 1, 33);
+        let p12 = Prop::from_block(1, 2, 33);
+        let p1c = Prop::from_block(1, 1, 66);
+        let prop = a.clone() | p11 | p12;
+        let guard = Guard::new();
+
+        assert_eq!(prop.simplify(&guard), p1c | a);
+    }
+
+    #[test]
     fn test_simplify_random_and() {
         let p11 = Prop::from_block(1, 1, 50);
         let p12 = Prop::from_block(1, 2, 50);
