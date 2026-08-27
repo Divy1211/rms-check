@@ -5,9 +5,12 @@ use crate::r#static::type_check::propositions::symbol::Symbol;
 
 #[derive(Debug, Clone)]
 pub struct Guard {
+    /* HashSet<u32> as value because a nested block should not remove a truthy/falsy symbol from the outer block */
     truthy: HashMap<Symbol, HashSet<u32>>,
     falsy: HashMap<Symbol, HashSet<u32>>,
     block_arm: Option<(u32, u32, u32)>,
+    pub falsy_block_arms: HashMap<u32, (u32, HashSet<u32>)>,
+    pub truthy_block_arm: HashMap<u32, u32>,
 }
 
 impl Default for Guard {
@@ -22,7 +25,26 @@ impl Guard {
             truthy: HashMap::new(),
             falsy: HashMap::new(),
             block_arm: None,
+            falsy_block_arms: HashMap::new(),
+            truthy_block_arm: HashMap::new(),
         }
+    }
+
+    pub fn is_arm_chosen(&self, block: u32, arm: u32) -> bool {
+        self.truthy_block_arm.get(&block).is_some_and(|chosen_arm| *chosen_arm == arm)
+    }
+
+    pub fn chance_increase(&self, block: u32) -> u32 {
+        self.falsy_block_arms
+            .get(&block)
+            .map(|(increase, _arms)| *increase)
+            .unwrap_or(0)
+    }
+
+    pub fn arm_is_falsy(&self, block: u32, arm: u32) -> bool {
+        self.falsy_block_arms
+            .get(&block)
+            .is_some_and(|(_increase, arms)| arms.contains(&arm))
     }
 
     pub fn in_arm(&mut self, block: u32, arm: u32, chance: u32) {
@@ -31,10 +53,7 @@ impl Guard {
 
     pub fn truthify(&mut self, block: u32, v: &str) {
         let key = Symbol::from(v);
-        let truthy = match self.truthy.get_mut(&key) {
-            None => self.truthy.entry(key.clone()).or_default(),
-            Some(truthy) => truthy,
-        };
+        let truthy = self.truthy.entry(key.clone()).or_default();
         truthy.insert(block);
 
         if let Some(falsy) = self.falsy.get_mut(&key) {
@@ -47,10 +66,7 @@ impl Guard {
 
     pub fn falsify(&mut self, block: u32, v: &str) {
         let key = Symbol::from(v);
-        let falsy = match self.falsy.get_mut(&key) {
-            None => self.falsy.entry(key.clone()).or_default(),
-            Some(falsy) => falsy,
-        };
+        let falsy = self.falsy.entry(key.clone()).or_default();
         falsy.insert(block);
 
         if let Some(truthy) = self.truthy.get_mut(&key) {
@@ -78,6 +94,21 @@ impl Guard {
                     Prop::False
                 }
             }
+            (Symbol::Random { block, arm, chance }, None) => {
+                if let Some(chosen_arm) = self.truthy_block_arm.get(block) {
+                    return if chosen_arm == arm {
+                        Prop::True
+                    } else {
+                        Prop::False
+                    }
+                }
+                if self.arm_is_falsy(*block, *arm) {
+                    return Prop::False;
+                }
+                if chance + self.chance_increase(*block) >= 100 {
+                    return Prop::True;
+                }
+            }
             _ => {}
         }
         if self.truthy.contains_key(v) {
@@ -101,6 +132,6 @@ impl Guard {
             et.push(Prop::from_block(block, arm, chance));
         }
 
-        et.simplify_and()
+        et.simplify_and(Some(self))
     }
 }

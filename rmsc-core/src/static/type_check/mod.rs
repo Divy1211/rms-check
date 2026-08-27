@@ -24,13 +24,13 @@ mod test {
         let mut ast_cache = AstMap::new();
         let mut src_cache = AstMap::new();
 
-        let random_map_def_path = PathBuf::from(r"random_map.def");
+        let random_map_def_path = PathBuf::from(r"random__map.def");
         let random_map_def = include_str!(r"../../../random_map.def");
 
         gen_errs_from_src(&random_map_def_path, random_map_def, &mut type_env, &mut ast_cache, &mut src_cache)
             .expect("random_map.def can't produce parse errors");
 
-        let grouped_symbols_def_path = PathBuf::from(r"grouped_symbols.def");
+        let grouped_symbols_def_path = PathBuf::from(r"grouped__symbols.def");
         let grouped_symbols_def = include_str!(r"../../../grouped_symbols.def");
 
         gen_errs_from_src(&grouped_symbols_def_path, grouped_symbols_def, &mut type_env, &mut ast_cache, &mut src_cache)

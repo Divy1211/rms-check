@@ -1,8 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use std::ops::Not;
 use std::path::PathBuf;
-use std::sync::{Arc, RwLock, RwLockReadGuard};
-use chumsky::container::{Container};
+use std::sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 use crate::parsing::{Identifier, Type};
 use crate::r#static::info::id_info::IdInfo;
 use crate::r#static::info::rms_error::RmsError;
@@ -34,7 +33,7 @@ pub struct TypeEnv {
     identifiers: HashMap<Identifier, IdInfo>,
     object_groups: HashMap<Identifier, IdInfo>,
     pub guard: Arc<RwLock<Guard>>,
-    pub chance_increases: HashMap<u32, u32>,
+
     pub errs: HashMap<PathBuf, Vec<RmsError>>,
     
     pub current_ignores: Arc<RwLock<Option<HashSet<u32>>>>,
@@ -83,6 +82,10 @@ impl TypeEnv {
         self.guard.read().expect("Not concurrent")
     }
 
+    pub fn guard_mut(&self) -> RwLockWriteGuard<'_, Guard> {
+        self.guard.write().expect("Not concurrent")
+    }
+
     pub fn in_arm(&mut self, arm: u32, chance: u32) {
         self.guard.write().expect("Not concurrent").in_arm(self.last_block, arm, chance);
     }
@@ -91,7 +94,12 @@ impl TypeEnv {
         match guard {
             Prop::True => {}
             Prop::False => {}
-            Prop::Var(Symbol::Random {..}) => {}
+            Prop::Var(Symbol::Random { block, arm, .. }) => {
+                let mut current_guard = self.guard_mut();
+                current_guard.truthy_block_arm.insert(*block, *arm);
+                /* truthy block arm dominates falsy in a simplification */
+                current_guard.falsy_block_arms.remove(block);
+            }
             Prop::Var(Symbol::Name(id)) => {
                 self.truthify(&id.0.clone());
             }
@@ -101,7 +109,16 @@ impl TypeEnv {
                 }
             }
             Prop::Or(_) => {}
-            Prop::Not(Symbol::Random {..}) => {}
+            Prop::Not(Symbol::Random { block, arm, chance, .. }) => {
+                let mut current_guard = self.guard_mut();
+                let (chance_increase, arms) = current_guard.falsy_block_arms.entry(*block).or_default();
+                *chance_increase += chance;
+                arms.insert(*arm);
+                /* For nested code, it is possible to have a different chosen arm, in which case falsy is meaningless */
+                if current_guard.is_arm_chosen(*block, *arm) {
+                    current_guard.truthy_block_arm.remove(block);
+                }
+            }
             Prop::Not(Symbol::Name(id)) => {
                 self.falsify(&id.0.clone());
             }
@@ -118,7 +135,16 @@ impl TypeEnv {
         match guard {
             Prop::True => {}
             Prop::False => {}
-            Prop::Var(Symbol::Random {..}) => {}
+            Prop::Var(Symbol::Random { block, arm, chance }) => {
+                let mut current_guard = self.guard_mut();
+                let (chance_increase, arms) = current_guard.falsy_block_arms.entry(*block).or_default();
+                *chance_increase += chance;
+                arms.insert(*arm);
+                /* For nested code, it is possible to have a different chosen arm, in which case falsy is meaningless */
+                if current_guard.is_arm_chosen(*block, *arm) {
+                    current_guard.truthy_block_arm.remove(block);
+                }
+            }
             Prop::Var(Symbol::Name(id)) => {
                 self.falsify(&id.0.clone());
             }
@@ -128,7 +154,12 @@ impl TypeEnv {
                     self.falsify_guard(v)
                 }
             }
-            Prop::Not(Symbol::Random {..}) => {}
+            Prop::Not(Symbol::Random { block, arm, .. }) => {
+                let mut current_guard = self.guard_mut();
+                current_guard.truthy_block_arm.insert(*block, *arm);
+                /* truthy block arm dominates falsy in a simplification */
+                current_guard.falsy_block_arms.remove(block);
+            }
             Prop::Not(Symbol::Name(id)) => {
                 self.truthify(&id.0.clone());
             }
@@ -137,15 +168,8 @@ impl TypeEnv {
 
     pub fn falsify(&mut self, v: &str) {
         self.guard.write().expect("Not concurrent").falsify(self.last_block, v);
-
         let Some(IdInfo { guard, .. }) = self.identifiers.get(&v.into()) else { return };
-        let guard = guard.clone();
-
-        self.falsify_guard(&guard);
-
-        let Prop::Var(Symbol::Random { block, chance, .. }) = &guard else { return };
-        let chance_increases = self.chance_increases.entry(*block).or_insert(0);
-        *chance_increases += *chance;
+        self.falsify_guard(&guard.clone());
     }
     
     pub fn errs(&self) -> &HashMap<PathBuf, Vec<RmsError>> {
@@ -157,7 +181,7 @@ impl TypeEnv {
             identifiers: HashMap::new(),
             object_groups: HashMap::new(),
             guard: Arc::new(RwLock::new(Guard::new())),
-            chance_increases: HashMap::new(),
+
             errs: HashMap::new(),
 
             include_dirs: Arc::new(include_dirs),
@@ -227,9 +251,9 @@ impl TypeEnv {
     
     pub fn set(&mut self, id: &Identifier, info: IdInfo) {
         if info.type_ == Type::ObjectGroup {
-            self.object_groups.push((id.clone(), info))
+            self.object_groups.insert(id.clone(), info);
         } else {
-            self.identifiers.push((id.clone(), info))
+            self.identifiers.insert(id.clone(), info);
         }
     }
 
@@ -300,18 +324,21 @@ impl TypeEnv {
                     result
                 }
             }
-            Prop::Var(Symbol::Random { .. }) | Prop::Not(Symbol::Random { .. }) => prop.clone(),
+            Prop::Var(s @ Symbol::Random { .. }) => self.guard().lookup(s),
+            Prop::Not(s @ Symbol::Random { .. }) => self.guard().lookup(s).not(),
             Prop::And(et) => {
+                let current_guard = self.guard();
                 et.iter()
                     .map(|prop| self.substitute_singletons(prop, guard, seen, false))
                     .collect::<Vec<_>>()
-                    .simplify_and()
+                    .simplify_and(Some(&current_guard))
             }
             Prop::Or(vel) => {
+                let current_guard = self.guard();
                 vel.iter()
                     .map(|prop| self.substitute_singletons(prop, guard, seen, false))
                     .collect::<Vec<_>>()
-                    .simplify_or(Some(&self.chance_increases))
+                    .simplify_or(Some(&current_guard))
             }
         }
     }

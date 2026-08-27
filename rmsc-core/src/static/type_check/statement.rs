@@ -1,7 +1,6 @@
 use std::borrow::Cow;
 use std::path::PathBuf;
 
-use chumsky::container::Container;
 use crate::doxygen::Doc;
 use crate::parsing::{AstNode, Expr, Identifier, Literal, Type};
 use crate::parsing::{Spanned};
@@ -63,7 +62,7 @@ pub fn rms_tc_stmt(
                 let filename = filename.trim_start_matches("\"").trim_end_matches("\"");
                 inc_path.push(filename);
                 if inc_path.is_file() {
-                    deps.push(inc_path.clone());
+                    deps.insert(inc_path.clone());
                     drop(_temp_ignore);
                     if type_env.skip_includes {
                         result = Some(Ok(()));

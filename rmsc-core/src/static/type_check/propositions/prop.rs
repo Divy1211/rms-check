@@ -42,21 +42,21 @@ impl BitAnd for Prop {
             (Prop::And(mut et), p @ (Prop::Var(_) | Prop::Not(_)))
             | (p @ (Prop::Var(_) | Prop::Not(_)), Prop::And(mut et)) => {
                 et.push(p);
-                et.simplify_and()
+                Prop::And(et)
             },
             (Prop::And(mut et1), Prop::And(mut et2)) => {
                 et1.append(&mut et2);
-                et1.simplify_and()
+                Prop::And(et1)
             },
             (p1 @ (Prop::Var(_) | Prop::Not(_)), p2 @ (Prop::Var(_) | Prop::Not(_))) => {
-                vec![p1, p2].simplify_and()
+                Prop::And(vec![p1, p2])
             },
             (Prop::Or(mut vel), p @ (Prop::Var(_) | Prop::Not(_) | Prop::And(_)))
             | (p @ (Prop::Var(_) | Prop::Not(_) | Prop::And(_)), Prop::Or(mut vel)) => {
                 for prop in vel.iter_mut() {
                     *prop = std::mem::replace(prop, Prop::False) & p.clone();
                 }
-                vel.simplify_or(None)
+                Prop::Or(vel)
             }
             (p1, p2) => unreachable!("Internal Error: Attempting to and {:?} {:?}. Too expensive", p1, p2),
         }
@@ -73,17 +73,17 @@ impl BitOr for Prop {
             (Prop::Or(mut vel), p @ (Prop::Var(_) | Prop::Not(_)))
             | (p @ (Prop::Var(_) | Prop::Not(_)), Prop::Or(mut vel)) => {
                 vel.push(p);
-                vel.simplify_or(None)
+                Prop::Or(vel)
             }
             (Prop::Or(mut vel1), Prop::Or(mut vel2)) => {
                 vel1.append(&mut vel2);
-                vel1.simplify_or(None)
+                Prop::Or(vel1)
             },
             (Prop::Or(mut vel), p @ Prop::And(_)) => {
                 vel.push(p);
-                vel.simplify_or(None)
+                Prop::Or(vel)
             },
-            (p1, p2) => vec![p1, p2].simplify_or(None),
+            (p1, p2) => Prop::Or(vec![p1, p2]),
         }
     }
 }
@@ -124,7 +124,7 @@ impl Prop {
                         v => { et.push(v); }
                     }
                 }
-                et.simplify_and()
+                et.simplify_and(Some(guard))
             }
             Prop::Or(xs) => 'vel: {
                 let mut vel = Vec::with_capacity(xs.len());
@@ -135,7 +135,7 @@ impl Prop {
                         v => { vel.push(v); }
                     }
                 }
-                vel.simplify_or(None)
+                vel.simplify_or(Some(guard))
             }
             Prop::Not(v) => {
                 guard.lookup(v).not()
@@ -145,12 +145,12 @@ impl Prop {
 }
 
 pub trait Simplifiable {
-    fn simplify_and(self) -> Prop;
-    fn simplify_or(self, chance_increases: Option<&HashMap<u32, u32>>) -> Prop;
+    fn simplify_and(self, guard: Option<&Guard>) -> Prop;
+    fn simplify_or(self, guard: Option<&Guard>) -> Prop;
 }
 
 impl Simplifiable for Vec<Prop> {
-    fn simplify_and(mut self) -> Prop {
+    fn simplify_and(mut self, guard: Option<&Guard>) -> Prop {
         /* A.A = A */
         self = self.into_iter().collect::<HashSet<_>>().into_iter().collect::<Vec<_>>();
 
@@ -163,8 +163,15 @@ impl Simplifiable for Vec<Prop> {
         let mut symbols = HashSet::with_capacity(self.len());
         let mut blocks = HashSet::with_capacity(self.len());
 
-        let mut removal = HashSet::with_capacity(self.len());
-        let mut do_removal = false;
+        let mut removal = HashMap::with_capacity(self.len());
+
+        #[derive(Eq, PartialEq, Hash)]
+        enum RemovalMode {
+            RemoveComplimentary,
+            RemoveAlways,
+        }
+
+        let mut has_regular = false;
 
         for (i, prop) in self.iter().enumerate() {
             match prop {
@@ -178,7 +185,24 @@ impl Simplifiable for Vec<Prop> {
                         }
                         symbols.insert((id, prop.is_not()));
                     }
-                    Symbol::Random { block, .. } => {
+                    Symbol::Random { block, arm, .. } => {
+                        if let Some(chosen_arm) = guard.and_then(|g| g.truthy_block_arm.get(block)) {
+                            match (chosen_arm == arm, !prop.is_not()) {
+                                (true, true) => removal.insert(i, RemovalMode::RemoveAlways),
+                                (true, false) => return Prop::False,
+                                (false, true) => return Prop::False,
+                                (false, false) => removal.insert(i, RemovalMode::RemoveAlways),
+                            };
+                        }
+
+                        if guard.is_some_and(|g| g.arm_is_falsy(*block, *arm)) {
+                            if !prop.is_not() {
+                                return Prop::False;
+                            } else {
+                                removal.insert(i, RemovalMode::RemoveAlways);
+                            }
+                        }
+
                         /* P_in(x).P_im(x) = 0 */
                         if blocks.contains(&(block, false)) && !prop.is_not() {
                             return Prop::False;
@@ -186,9 +210,9 @@ impl Simplifiable for Vec<Prop> {
                         /* P_in(x).P'_im(x) = P_in(x) */
                         /* if we encounter any regular P(x) blocks, remove any complimentary ones */
                         if !prop.is_not() {
-                            do_removal = true;
+                            has_regular = true;
                         } else {
-                            removal.insert(i);
+                            removal.insert(i, RemovalMode::RemoveComplimentary);
                         }
                         blocks.insert((block, prop.is_not()));
                     }
@@ -200,7 +224,17 @@ impl Simplifiable for Vec<Prop> {
         self = self
             .into_iter()
             .enumerate()
-            .filter_map(|(i, x)| if do_removal && removal.contains(&i) || x == Prop::True { None } else { Some(x) })
+            .filter_map(|(i, x)| {
+                let removal_mode = removal.get(&i);
+                if x == Prop::True
+                    || removal_mode.is_some_and(|m| *m == RemovalMode::RemoveAlways)
+                    || has_regular && removal_mode.is_some()
+                {
+                    None
+                } else {
+                    Some(x)
+                }
+            })
             .collect();
 
         if self.is_empty() {
@@ -212,12 +246,12 @@ impl Simplifiable for Vec<Prop> {
         Prop::And(self)
     }
 
-    fn simplify_or(mut self, chance_increases: Option<&HashMap<u32, u32>>) -> Prop {
+    fn simplify_or(mut self, guard: Option<&Guard>) -> Prop {
         /* A + A = A */
         self = self.into_iter().collect::<HashSet<_>>().into_iter().collect::<Vec<_>>();
 
         if self.is_empty() {
-            return Prop::True
+            return Prop::False
         } else if self.len() == 1 {
             return self.into_iter().next().unwrap();
         }
@@ -241,6 +275,14 @@ impl Simplifiable for Vec<Prop> {
                         symbols.insert((id, prop.is_not()));
                     }
                     Symbol::Random { block, arm, chance } => {
+                        if let Some(chosen_arm) = guard.and_then(|g| g.truthy_block_arm.get(block)) {
+                            match (chosen_arm == arm, !prop.is_not()) {
+                                (true, true) => return Prop::True,
+                                (true, false) => removal.insert(i),
+                                (false, true) => removal.insert(i),
+                                (false, false) => return Prop::True,
+                            };
+                        }
                         /* P_in(x1) + P_im(x2) = P_inm(x1 + x2) */
                         let (entry, new_block) = match blocks.entry(*block) {
                             Entry::Vacant(entry) => {
@@ -255,15 +297,16 @@ impl Simplifiable for Vec<Prop> {
                             if !new_block {
                                 removal.insert(i);
                             }
+                            let chance_total = entry.1 + guard.map(|g| g.chance_increase(*block)).unwrap_or(0);
+                            if chance_total >= 100 {
+                                return Prop::True;
+                            }
                         } else {
                             /* P'_in(x1) + P'_im(x2) = 1 */
                             if has_complimentary_random {
                                 return Prop::True;
                             }
                             has_complimentary_random = true;
-                        }
-                        if entry.1 + chance_increases.and_then(|p| p.get(block).copied()).unwrap_or(0) >= 100 {
-                            return Prop::True;
                         }
                     }
                 }
@@ -286,7 +329,7 @@ impl Simplifiable for Vec<Prop> {
             .collect();
 
         if self.is_empty() {
-            return Prop::True
+            return Prop::False
         } else if self.len() == 1 {
             return self.into_iter().next().unwrap();
         }
