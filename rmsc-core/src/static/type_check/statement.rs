@@ -132,8 +132,18 @@ pub fn rms_tc_stmt(
                         &guard.read().expect("Not concurrent"),
                     ));
                 }
-                Some(info) => {
-                    info.join(&guard.read().expect("Not concurrent"));
+                Some(_info) => {
+                    if type_env.check_live(name) == Liveness::Live {
+                        type_env.add_err(path, RmsError::warning(
+                            span,
+                            "Name {} is already defined and will not be overwritten",
+                            vec![&name.0],
+                            WarningKind::ShadowedVarName
+                        ));
+                    } else {
+                        let info = type_env.get_mut(name).expect("borrow checker");
+                        info.join(&guard.read().expect("Not concurrent"));
+                    }
                 }
             }
             Ok(())
@@ -242,16 +252,24 @@ pub fn rms_tc_stmt(
                 let guard = type_env.guard.clone();
                 match type_env.identifiers.get_mut(name) {
                     None => {
-                        println!("two");
                         type_env.set(name, IdInfo::from(
                             &Type::ObjectGroup,
                             SrcLoc::from(path, name_span),
                             &guard.read().expect("Not concurrent"),
                         ));
                     }
-                    Some(info) => {
-                        println!("three");
-                        info.join(&guard.read().expect("Not concurrent"));
+                    Some(_info) => {
+                        if type_env.check_live(name) == Liveness::Live {
+                            type_env.add_err(path, RmsError::warning(
+                                span,
+                                "Name {} is already defined and will not be overwritten",
+                                vec![&name.0],
+                                WarningKind::ShadowedVarName
+                            ));
+                        } else {
+                            let info = type_env.get_mut(name).expect("borrow checker");
+                            info.join(&guard.read().expect("Not concurrent"));
+                        }
                     }
                 }
             };

@@ -24,16 +24,7 @@ pub enum RmsError {
 
 #[derive(Debug, Clone)]
 pub enum WarningKind {
-    // TopStrInit = 100,
-    // DupCase = 101,
-    // DiscardedFn = 102,
-    // BreakPt = 103,
-    // UnusableClasses = 104,
-    // FirstOprArith = 105,
-    // CmpSilentCrash = 106,
-    // BoolCaseSilentCrash = 107,
-    // NumDownCast = 108,
-    // NoNumPromo = 109,
+    ShadowedVarName = 100,
 
     UnknownWarningName = 1000,
 }
@@ -173,34 +164,16 @@ impl WarningKind {
 
     pub fn as_str(&self) -> &str {
         match self {
-            // WarningKind::TopStrInit => { "TopStrInit" }
-            // WarningKind::DupCase => { "DupCase" }
-            // WarningKind::DiscardedFn => { "DiscardedFn" }
-            // WarningKind::BreakPt => { "BreakPt" }
-            // WarningKind::UnusableClasses => { "UnusableClasses" }
-            // WarningKind::FirstOprArith => { "FirstOprArith" }
-            // WarningKind::CmpSilentCrash => { "CmpSilentCrash" }
-            // WarningKind::BoolCaseSilentCrash => { "BoolCaseSilentCrash" }
-            // WarningKind::NumDownCast => { "NumDownCast" }
-            // WarningKind::NoNumPromo => { "NoNumPromo" }
+            WarningKind::ShadowedVarName => { "TopStrInit" }
             WarningKind::UnknownWarningName => { "UnknownWarningName" }
         }
     }
 
     pub fn from_name(name: &str) -> Option<WarningKind> {
         match name {
-            // "TopStrInit"          => { Some(WarningKind::TopStrInit) }
-            // "DupCase"             => { Some(WarningKind::DupCase) }
-            // "DiscardedFn"         => { Some(WarningKind::DiscardedFn) }
-            // "BreakPt"             => { Some(WarningKind::BreakPt) }
-            // "UnusableClasses"     => { Some(WarningKind::UnusableClasses) }
-            // "FirstOprArith"       => { Some(WarningKind::FirstOprArith) }
-            // "CmpSilentCrash"      => { Some(WarningKind::CmpSilentCrash) }
-            // "BoolCaseSilentCrash" => { Some(WarningKind::BoolCaseSilentCrash) }
-            // "NumDownCast"         => { Some(WarningKind::NumDownCast) }
-            // "NoNumPromo"          => { Some(WarningKind::NoNumPromo) }
+            "ShadowedVarName"          => { Some(WarningKind::ShadowedVarName) }
             
-            // UnknownWarningName cannot be ignored, so it is exlcuded here
+            // UnknownWarningName cannot be ignored, so it is excluded here
             _                     => None
         }
     }
