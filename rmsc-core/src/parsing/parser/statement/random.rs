@@ -3,7 +3,7 @@ use crate::parsing::ast::{AstNode};
 use crate::parsing::lexer::Token;
 use crate::parsing::parser::parser_input::ParserInput;
 use crate::parsing::parser::statement::body::body;
-use crate::parsing::{Span, Spanned};
+use crate::parsing::{Expr, Literal, Span, Spanned};
 use crate::parsing::parser::expression::expression;
 
 pub fn random<'tokens>(
@@ -24,5 +24,20 @@ pub fn random<'tokens>(
             .repeated().collect::<Vec<_>>()
     )
         .then_ignore(just(Token::EndRandom))
-        .map_with(| arms, info| (AstNode::Random { arms }, info.span()))
+        .map_with(| mut arms, info| {
+            if let Some(((Expr::Literal(Literal::Int(i)), _span), _body)) = arms.first_mut() {
+                *i += 1
+            };
+            let mut total = 0;
+            for arm in arms.iter() {
+                if let ((Expr::Literal(Literal::Int(i)), _span), _body) = arm {
+                    total += *i;
+                };
+            }
+
+            if total > 100 && let Some(((Expr::Literal(Literal::Int(i)), _span), _body)) = arms.last_mut() {
+                *i -= 1
+            };
+            (AstNode::Random { arms }, info.span())
+        })
 }
