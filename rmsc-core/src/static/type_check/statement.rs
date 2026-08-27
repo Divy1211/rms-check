@@ -121,9 +121,7 @@ pub fn rms_tc_stmt(
             Ok(())
         }
         AstNode::ConstDef { name: (name, name_span), value } => {
-            /* If there's type errors here, we will show them already, so retain the name in the env so that we don't
-               get errors further down the road */
-            let type_ = rms_tc_expr(path, value, type_env).unwrap_or(Type::Float);
+            let type_ = rms_tc_expr(path, value, type_env).unwrap_or(Type::Label);
 
             let guard = type_env.guard.clone();
             match type_env.identifiers.get_mut(name) {
