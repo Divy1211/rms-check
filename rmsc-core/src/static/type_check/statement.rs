@@ -198,7 +198,7 @@ pub fn rms_tc_stmt(
                     Expr::Identifier(id) => {
                         if let Some(info) = type_env.identifiers.get(id) && info.type_ == Type::ObjectGroup {
                             type_env.add_err(path, RmsError::warning(
-                                span,
+                                condition_span,
                                 "{0} is an {1} and should not be used here",
                                 vec![&id.0, "object_group"],
                                 WarningKind::ObjectGroupNameInIf
