@@ -1,4 +1,5 @@
 use std::collections::{HashMap, HashSet};
+use std::fmt::{Display, Formatter};
 use std::ops::{BitAnd, BitOr, Not};
 use crate::parsing::Identifier;
 use crate::r#static::type_check::propositions::guard::Guard;
@@ -259,5 +260,38 @@ impl Simplifiable for Vec<Prop> {
         }
 
         Prop::Or(self)
+    }
+}
+
+impl Display for Prop {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Prop::True => { write!(f, "true") }
+            Prop::False => { write!(f, "false") }
+            Prop::Var(v) => { write!(f, "{}", v) }
+            Prop::And(et) => {
+                write!(f, "(")?;
+                for (i, p) in et.iter().enumerate() {
+                    if i < et.len() - 1 {
+                        write!(f, "{} & ", p)?;
+                    } else {
+                        write!(f, "{}", p)?;
+                    }
+                }
+                write!(f, ")")
+            }
+            Prop::Or(vel) => {
+                write!(f, "(")?;
+                for (i, p) in vel.iter().enumerate() {
+                    if i < vel.len() - 1 {
+                        write!(f, "{} | ", p)?;
+                    } else {
+                        write!(f, "{}", p)?;
+                    }
+                }
+                write!(f, ")")
+            }
+            Prop::Not(neg) => { write!(f, "{}'", neg) }
+        }
     }
 }

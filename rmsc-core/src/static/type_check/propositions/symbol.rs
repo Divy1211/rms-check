@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::parsing::Identifier;
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
@@ -18,5 +19,14 @@ impl Symbol {
 impl From<&str> for Symbol {
     fn from(value: &str) -> Self {
         Symbol::from_name(value)
+    }
+}
+
+impl Display for Symbol {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Symbol::Name(id) => { write!(f, "{}", id) }
+            Symbol::Random { block, arm, chance } => { write!(f, "Rnd({}, {}, {})", block, arm, chance) }
+        }
     }
 }
