@@ -106,7 +106,7 @@ pub fn rms_tc_stmt(
         }
         AstNode::LabelDef((name, name_span)) => {
             let guard = type_env.guard.clone();
-            match type_env.identifiers.get_mut(name) {
+            match type_env.get_ref(name) {
                 None => {
                     type_env.set(name, IdInfo::from(
                         &Type::Label,
@@ -115,30 +115,41 @@ pub fn rms_tc_stmt(
                     ));
                 }
                 Some(info) => {
-                    if info.type_ == Type::ObjectGroup {
+                    let type_ = info.type_;
+                    if type_env.check_live(name, true).is_maybe_live() {
                         type_env.add_err(path, RmsError::warning(
                             span,
-                            "{0} {1} will be overwritten by this {2}",
+                            "{0} {1} might be overwritten by this {2}",
                             vec!["object_group", &name.0, "#define"],
-                            WarningKind::ShadowedVarName
+                            WarningKind::ShadowedName,
                         ));
+                    }
+                    if type_ != Type::ObjectGroup && type_env.check_live(name, false) == Liveness::Live {
+                        type_env.add_err(path, RmsError::warning(
+                            span,
+                            "Name {0} is already defined and will not be overwritten",
+                            vec![&name.0],
+                            WarningKind::RedefinedName
+                        ));
+                    }
+                    if let Some(info) = type_env.get_id_mut(name) {
+                        info.join(&guard.read().expect("Not concurrent"));
+                    } else {
                         type_env.set(name, IdInfo::from(
                             &Type::Label,
                             SrcLoc::from(path, name_span),
-                            &guard.read().expect("Not concurrent")
+                            &guard.read().expect("Not concurrent"),
                         ));
                     }
-                    let info = type_env.get_mut(name).expect("borrow checker");
-                    info.join(&guard.read().expect("Not concurrent"));
                 }
             }
             Ok(())
         }
         AstNode::ConstDef { name: (name, name_span), value } => {
-            let type_ = rms_tc_expr(path, value, type_env).unwrap_or(Type::Label);
+            let type_ = rms_tc_expr(path, value, type_env, true).unwrap_or(Type::Label);
 
             let guard = type_env.guard.clone();
-            match type_env.identifiers.get_mut(name) {
+            match type_env.get_ref(name) {
                 None => {
                     type_env.set(name, IdInfo::from(
                         &type_,
@@ -147,32 +158,32 @@ pub fn rms_tc_stmt(
                     ));
                 }
                 Some(info) => {
-                    let mut issue_second_warning = true;
-                    if info.type_ == Type::ObjectGroup {
+                    let name_type = info.type_;
+                    if type_env.check_live(name, true).is_maybe_live() {
                         type_env.add_err(path, RmsError::warning(
                             span,
-                            "{0} {1} will be overwritten by this {2}",
+                            "{0} {1} might be overwritten by this {2}",
                             vec!["object_group", &name.0, "#const"],
-                            WarningKind::ShadowedVarName
+                            WarningKind::ShadowedName
                         ));
-                        issue_second_warning = false;
+                    }
+                    if name_type != Type::ObjectGroup && type_env.check_live(name, false) == Liveness::Live {
+                        type_env.add_err(path, RmsError::warning(
+                            span,
+                            "Name {0} is already defined and will not be overwritten",
+                            vec![&name.0],
+                            WarningKind::RedefinedName
+                        ));
+                    }
+                    if let Some(info) = type_env.get_id_mut(name) {
+                        info.join(&guard.read().expect("Not concurrent"));
+
+                    } else {
                         type_env.set(name, IdInfo::from(
                             &type_,
                             SrcLoc::from(path, name_span),
                             &guard.read().expect("Not concurrent"),
                         ));
-                    }
-
-                    if issue_second_warning && type_env.check_live(name) == Liveness::Live {
-                        type_env.add_err(path, RmsError::warning(
-                            span,
-                            "Name {0} is already defined and will not be overwritten",
-                            vec![&name.0],
-                            WarningKind::ShadowedVarName
-                        ));
-                    } else {
-                        let info = type_env.get_mut(name).expect("borrow checker");
-                        info.join(&guard.read().expect("Not concurrent"));
                     }
                 }
             }
@@ -180,7 +191,7 @@ pub fn rms_tc_stmt(
         }
         AstNode::UnDef((name, _name_span)) => {
             let guard = type_env.guard.clone();
-            match type_env.identifiers.get_mut(name) {
+            match type_env.get_mut(name) {
                 None => {}
                 Some(info) => {
                     info.join_not(&guard.read().expect("Not concurrent"));
@@ -196,12 +207,12 @@ pub fn rms_tc_stmt(
             for ((condition, condition_span), (body, _span)) in consequents {
                 let id = match condition {
                     Expr::Identifier(id) => {
-                        if let Some(info) = type_env.identifiers.get(id) && info.type_ == Type::ObjectGroup {
+                        if let Some(info) = type_env.get_ref(id) && info.type_ == Type::ObjectGroup {
                             type_env.add_err(path, RmsError::warning(
                                 condition_span,
-                                "{0} is an {1} and should not be used here",
+                                "{0} is an {1} and should not be used here. This branch will be considered dead code",
                                 vec![&id.0, "object_group"],
-                                WarningKind::ObjectGroupNameInIf
+                                WarningKind::GroupNameInIf
                             ));
                         }
                         Cow::Borrowed(id)
@@ -216,7 +227,7 @@ pub fn rms_tc_stmt(
                     }
                 };
 
-                let liveness = type_env.check_live(&id);
+                let liveness = type_env.check_live(&id, false);
                 else_dead |= liveness == Liveness::Live;
                 if liveness != Liveness::Dead || type_env.check_dead_paths {
                     type_env.truthify(&id.0);
@@ -290,7 +301,7 @@ pub fn rms_tc_stmt(
         AstNode::Command {name: (command_name, _span), params} => {
             if command_name.0 == "create_object_group" && let Some((Expr::Identifier(name), name_span)) = params.first() {
                 let guard = type_env.guard.clone();
-                match type_env.identifiers.get_mut(name) {
+                match type_env.get_ref(name) {
                     None => {
                         type_env.set(name, IdInfo::from(
                             &Type::ObjectGroup,
@@ -298,18 +309,38 @@ pub fn rms_tc_stmt(
                             &guard.read().expect("Not concurrent"),
                         ));
                     }
-                    Some(_info) => {
-                        type_env.add_err(path, RmsError::warning(
-                            span,
-                            "Name {0} is already defined and will not be overwritten",
-                            vec![&name.0],
-                            WarningKind::ShadowedVarName
-                        ));
+                    Some(info) => {
+                        if type_env.check_live(name, false).is_maybe_live() {
+                            let type_name = info.type_.to_string();
+                            type_env.add_err(path, RmsError::warning(
+                                span,
+                                "Name {0} is maybe already defined as {1} {2} and might not be overwritten",
+                                vec![&name.0, if type_name.starts_with("i") { "an" } else { "a" }, &type_name],
+                                WarningKind::ShadowedName,
+                            ));
+                        }
+                        if type_env.check_live(name, true) == Liveness::Live {
+                            type_env.add_err(path, RmsError::warning(
+                                span,
+                                "Name {0} is already an {1} and will not be overwritten",
+                                vec![&name.0, "object_group"],
+                                WarningKind::RedefinedName,
+                            ));
+                        }
+                        if let Some(info) = type_env.get_group_mut(name) {
+                            info.join(&guard.read().expect("Not concurrent"));
+                        } else {
+                            type_env.set(name, IdInfo::from(
+                                &Type::ObjectGroup,
+                                SrcLoc::from(path, name_span),
+                                &guard.read().expect("Not concurrent"),
+                            ));
+                        }
                     }
                 }
             };
             for param in params {
-                let Some(type_) = rms_tc_expr(path, param, type_env) else {
+                let Some(type_) = rms_tc_expr(path, param, type_env, command_name.0 != "create_object_group") else {
                     return Ok(());
                 };
                 match type_ {

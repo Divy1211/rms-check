@@ -14,7 +14,7 @@ fn main() {
 
     println!("errs = {:#?}", type_env.errs);
 
-    println!("is_live C: {:#?}", type_env.check_live(&Identifier::new("C")));
+    println!("is_live C: {:#?}", type_env.check_live(&Identifier::new("C"), false));
 
     // println!("{:#?}", type_env);
 }

@@ -10,6 +10,7 @@ pub fn rms_tc_expr(
     path: &PathBuf,
     (expr, span): &Spanned<Expr>,
     type_env: &mut TypeEnv,
+    check_liveness: bool,
 ) -> Option<Type> { match expr {
     Expr::Rnd(_ ,_) => Some(Type::Int),
     Expr::Literal(lit) => match lit {
@@ -18,12 +19,8 @@ pub fn rms_tc_expr(
         Literal::Str(_) => None,
     }
     Expr::Identifier(id) => {
-        let liveness = type_env.check_live(id);
+        let liveness = if check_liveness { type_env.check_live(id, false) } else { Liveness::Live };
         let Some(IdInfo { type_, ..}) = type_env.get(id) else {
-            // if id.is_default_name() {
-            //     return Some(Type::Label);
-            // }
-
             /* Something like: if D create_terrain D { ... } endif should not issue an undefined name error */
             if liveness == Liveness::Live {
                 return Some(Type::Float);
@@ -43,7 +40,7 @@ pub fn rms_tc_expr(
         }
         Some(type_)
     }
-    Expr::Paren(expr) => { rms_tc_expr(path, expr, type_env) }
+    Expr::Paren(expr) => { rms_tc_expr(path, expr, type_env, check_liveness) }
     Expr::Neg(expr) => {
         let (_, inner_span): &Spanned<Expr> = expr;
         
@@ -55,7 +52,7 @@ pub fn rms_tc_expr(
             ))
         }
 
-        rms_tc_expr(path, expr, type_env)
+        rms_tc_expr(path, expr, type_env, check_liveness)
     }
 
     Expr::Star(expr1, expr2) => {

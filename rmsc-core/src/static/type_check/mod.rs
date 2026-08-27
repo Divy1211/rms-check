@@ -43,72 +43,72 @@ mod test {
 
     #[test]
     fn test_is_live_a() {
-        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("A")), Liveness::Live)
+        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("A"), false), Liveness::Live)
     }
 
     #[test]
     fn test_is_live_b() {
-        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("B")), Liveness::Maybe)
+        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("B"), false), Liveness::Maybe)
     }
 
     #[test]
     fn test_is_live_c() {
-        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("C")), Liveness::Maybe)
+        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("C"), false), Liveness::Maybe)
     }
 
     #[test]
     fn test_is_live_d() {
-        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("D")), Liveness::Maybe)
+        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("D"), false), Liveness::Maybe)
     }
 
     #[test]
     fn test_is_live_e() {
-        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("E")), Liveness::Live)
+        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("E"), false), Liveness::Live)
     }
 
     #[test]
     fn test_is_live_f() {
-        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("F")), Liveness::Live)
+        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("F"), false), Liveness::Live)
     }
 
     #[test]
     fn test_is_live_g() {
-        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("G")), Liveness::Dead)
+        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("G"), false), Liveness::Dead)
     }
 
     #[test]
     fn test_is_live_h() {
-        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("H")), Liveness::Dead)
+        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("H"), false), Liveness::Dead)
     }
 
     #[test]
     fn test_is_live_i() {
-        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("I")), Liveness::Dead)
+        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("I"), false), Liveness::Dead)
     }
 
     #[test]
     fn test_is_live_j() {
-        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("J")), Liveness::Maybe)
+        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("J"), false), Liveness::Maybe)
     }
 
     #[test]
     fn test_is_live_k() {
-        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("K")), Liveness::Live)
+        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("K"), false), Liveness::Live)
     }
 
     #[test]
     fn test_is_live_l() {
-        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("L")), Liveness::Live)
+        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("L"), false), Liveness::Live)
     }
 
     #[test]
     fn test_is_live_m() {
-        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("M")), Liveness::Live)
+        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("M"), false), Liveness::Live)
     }
 
     #[test]
     fn test_is_live_n() {
-        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("N")), Liveness::Live)
+        assert_eq!(TYPE_ENV_LIVE.check_live(&Identifier::new("N"), false), Liveness::Live)
     }
 
     #[allow(unused)]
@@ -170,5 +170,10 @@ mod test {
     #[test]
     fn test_unified_random_else() {
         test_check_flags("unified_random_else.rms", false, false, 0);
+    }
+
+    #[test]
+    fn test_back_prop() {
+        test_check_flags("back_prop.rms", false, false, 0);
     }
 }

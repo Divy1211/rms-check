@@ -36,7 +36,7 @@ pub fn arith_op(
     // no error is returned specifically because if None is returned, an error will have
     // been generated already
     let (Some(type1), Some(type2)) = (
-        rms_tc_expr(path, expr1, type_env), rms_tc_expr(path, expr2, type_env)
+        rms_tc_expr(path, expr1, type_env, true), rms_tc_expr(path, expr2, type_env, true)
     ) else {
         return None;
     };

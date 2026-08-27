@@ -15,6 +15,7 @@ impl Identifier {
         Identifier(name.to_string())
     }
 
+    #[allow(unused)]
     pub fn is_default_name(&self) -> bool {
         match self.0.as_str() {
             /* game modes */

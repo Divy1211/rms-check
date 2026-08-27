@@ -1,7 +1,7 @@
 use std::fmt::Display;
 use std::fmt::Formatter;
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Type {
     Int,
     Float,
