@@ -74,10 +74,21 @@ mod test {
         let b = Prop::from_name("B");
         let prop = a.clone() & b.clone() | a & !b;
         let mut guard = Guard::new();
-        guard.truthify(0, "A");
+        guard.truthify("A");
 
         assert_eq!(prop.simplify(&guard), Prop::True);
     }
+
+    // This requires a double iteration. It's here if I ever need it.
+    // #[test]
+    // fn test_simplify_or2() {
+    //     let a = Prop::from_name("A");
+    //     let b = Prop::from_name("B");
+    //     let prop = a.clone() & b.clone() | a.clone() & !b;
+    //     let guard = Guard::new();
+    //
+    //     assert_eq!(prop.simplify(&guard), a);
+    // }
 
     #[test]
     fn test_simplify_random_or() {
@@ -87,7 +98,7 @@ mod test {
         let p12 = Prop::from_block(1, 2, 50);
         let prop = a.clone() & p11 | a & p12 | b;
         let mut guard = Guard::new();
-        guard.truthify(0, "A");
+        guard.truthify("A");
 
         assert_eq!(prop.simplify(&guard), Prop::True);
     }
@@ -132,8 +143,7 @@ mod test {
         let s = prop.simplify(&guard);
 
         if s != e1 && s != e2 && s != e3 && s != e4 {
-            eprintln!("{s}, {e1}, {e2}, {e3}, {e4}");
-            assert!(false);
+            panic!("{s}, {e1}, {e2}, {e3}, {e4}");
         }
     }
 

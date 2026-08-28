@@ -72,8 +72,13 @@ impl Drop for NestedGuard {
 impl TypeEnv {
     pub fn nested_guard(&mut self) -> NestedGuard {
         self.last_block += 1;
+
+        let mut guard = self.guard_mut();
+        let prev_guard = Some(guard.clone());
+
+        guard.current_block = self.last_block;
         NestedGuard {
-            prev_guard: Some(self.guard.read().expect("Not concurrent").clone()),
+            prev_guard,
             guard: self.guard.clone(),
         }
     }
@@ -87,7 +92,7 @@ impl TypeEnv {
     }
 
     pub fn in_arm(&mut self, arm: u32, chance: u32) {
-        self.guard.write().expect("Not concurrent").in_arm(self.last_block, arm, chance);
+        self.guard.write().expect("Not concurrent").in_arm(arm, chance);
     }
 
     pub fn truthify_guard(&mut self, guard: &Prop) {
@@ -126,7 +131,7 @@ impl TypeEnv {
     }
 
     pub fn truthify(&mut self, v: &str) {
-        self.guard.write().expect("Not concurrent").truthify(self.last_block, v);
+        self.guard.write().expect("Not concurrent").truthify(v);
         let Some(IdInfo { guard, .. }) = self.identifiers.get(&v.into()) else { return };
         self.truthify_guard(&guard.clone());
     }
@@ -167,7 +172,7 @@ impl TypeEnv {
     }
 
     pub fn falsify(&mut self, v: &str) {
-        self.guard.write().expect("Not concurrent").falsify(self.last_block, v);
+        self.guard.write().expect("Not concurrent").falsify(v);
         let Some(IdInfo { guard, .. }) = self.identifiers.get(&v.into()) else { return };
         self.falsify_guard(&guard.clone());
     }

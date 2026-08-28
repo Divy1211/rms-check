@@ -8,7 +8,9 @@ pub struct Guard {
     /* HashSet<u32> as value because a nested block should not remove a truthy/falsy symbol from the outer block */
     truthy: HashMap<Symbol, HashSet<u32>>,
     falsy: HashMap<Symbol, HashSet<u32>>,
-    block_arm: Option<(u32, u32, u32)>,
+    block_arm: Option<(u32, u32)>,
+    
+    pub current_block: u32,
     pub falsy_block_arms: HashMap<u32, (u32, HashSet<u32>)>,
     pub truthy_block_arm: HashMap<u32, u32>,
 }
@@ -25,6 +27,7 @@ impl Guard {
             truthy: HashMap::new(),
             falsy: HashMap::new(),
             block_arm: None,
+            current_block: 0,
             falsy_block_arms: HashMap::new(),
             truthy_block_arm: HashMap::new(),
         }
@@ -47,30 +50,30 @@ impl Guard {
             .is_some_and(|(_increase, arms)| arms.contains(&arm))
     }
 
-    pub fn in_arm(&mut self, block: u32, arm: u32, chance: u32) {
-        self.block_arm = Some((block, arm, chance));
+    pub fn in_arm(&mut self, arm: u32, chance: u32) {
+        self.block_arm = Some((arm, chance));
     }
 
-    pub fn truthify(&mut self, block: u32, v: &str) {
+    pub fn truthify(&mut self, v: &str) {
         let key = Symbol::from(v);
         let truthy = self.truthy.entry(key.clone()).or_default();
-        truthy.insert(block);
+        truthy.insert(self.current_block);
 
         if let Some(falsy) = self.falsy.get_mut(&key) {
-        falsy.remove(&block);
+        falsy.remove(&self.current_block);
             if falsy.is_empty() {
                 self.falsy.remove(&key);
             }
         }
     }
 
-    pub fn falsify(&mut self, block: u32, v: &str) {
+    pub fn falsify(&mut self, v: &str) {
         let key = Symbol::from(v);
         let falsy = self.falsy.entry(key.clone()).or_default();
-        falsy.insert(block);
+        falsy.insert(self.current_block);
 
         if let Some(truthy) = self.truthy.get_mut(&key) {
-            truthy.remove(&block);
+            truthy.remove(&self.current_block);
             if truthy.is_empty() {
                 self.truthy.remove(&key);
             }
@@ -87,7 +90,7 @@ impl Guard {
 
     pub fn lookup(&self, v: &Symbol) -> Prop {
         match (v, self.block_arm) {
-            (Symbol::Random { block, arm, .. }, Some((current_block, current_arm, _chance))) if *block == current_block => {
+            (Symbol::Random { block, arm, .. }, Some((current_arm, _chance))) if *block == self.current_block => {
                 return if *arm == current_arm {
                     Prop::True
                 } else {
@@ -128,8 +131,8 @@ impl Guard {
         for var in self.falsy.keys() {
             et.push(Prop::Not(var.clone()))
         }
-        if let Some((block, arm, chance)) = self.block_arm {
-            et.push(Prop::from_block(block, arm, chance));
+        if let Some((arm, chance)) = self.block_arm {
+            et.push(Prop::from_block(self.current_block, arm, chance));
         }
 
         et.simplify_and(Some(self))

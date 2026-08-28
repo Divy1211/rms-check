@@ -173,7 +173,17 @@ mod test {
     }
 
     #[test]
+    fn test_unified_random_else2() {
+        test_check_flags("unified_random_else2.rms", false, false, 0);
+    }
+
+    #[test]
     fn test_back_prop() {
         test_check_flags("back_prop.rms", false, false, 0);
+    }
+
+    #[test]
+    fn test_nested_blocks() {
+        test_check_flags("nested_blocks.rms", false, false, 0);
     }
 }
