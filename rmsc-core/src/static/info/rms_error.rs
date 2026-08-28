@@ -27,6 +27,7 @@ pub enum WarningKind {
     ShadowedName = 100,
     RedefinedName = 101,
     GroupNameInIf = 102,
+    MergedGroups = 103,
 
     UnknownWarningName = 1000,
 }
@@ -169,6 +170,7 @@ impl WarningKind {
             WarningKind::ShadowedName => { "ShadowedName" }
             WarningKind::RedefinedName => { "RedefinedName" }
             WarningKind::GroupNameInIf => { "GroupNameInIf" }
+            WarningKind::MergedGroups => { "MergedGroups" }
             WarningKind::UnknownWarningName => { "UnknownWarningName" }
         }
     }
@@ -178,7 +180,8 @@ impl WarningKind {
             "ShadowedName"          => { Some(WarningKind::ShadowedName) }
             "RedefinedName"         => { Some(WarningKind::RedefinedName) }
             "GroupNameInIf"         => { Some(WarningKind::GroupNameInIf) }
-            
+            "MergedGroups"          => { Some(WarningKind::MergedGroups) }
+
             // UnknownWarningName cannot be ignored, so it is excluded here
             _                     => None
         }

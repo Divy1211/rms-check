@@ -321,9 +321,9 @@ pub fn rms_tc_stmt(
                         if type_env.check_live(name, true) == Liveness::Live {
                             type_env.add_err(path, RmsError::warning(
                                 span,
-                                "Name {0} is already an {1} and will not be overwritten",
+                                "Name {0} is already defined as an {1}, those objects will be merged with this definition",
                                 vec![&name.0, "object_group"],
-                                WarningKind::RedefinedName,
+                                WarningKind::MergedGroups,
                             ));
                         }
                         if let Some(info) = type_env.get_group_mut(name) {

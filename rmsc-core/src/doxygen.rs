@@ -20,9 +20,9 @@ impl Doc {
 
     pub fn  parse(comment: &str) -> Result<Doc, &str> {
         let comment = comment.trim_start();
-        if comment.starts_with("/* rms-ignore: ") {
+        if comment.starts_with("/* rmsc-ignore: ") {
             let comment = comment
-                .trim_start_matches("/* rms-ignore: ")
+                .trim_start_matches("/* rmsc-ignore: ")
                 .trim_end_matches(" */");
             return Ok(Doc::Ignore(warnings_from_str(comment)?));
         }
