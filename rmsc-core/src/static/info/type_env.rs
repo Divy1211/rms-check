@@ -92,7 +92,7 @@ impl TypeEnv {
     }
 
     pub fn in_arm(&mut self, arm: u32, chance: u32) {
-        self.guard.write().expect("Not concurrent").in_arm(arm, chance);
+        self.guard_mut().in_arm(arm, chance);
     }
 
     pub fn truthify_guard(&mut self, guard: &Prop) {
@@ -131,7 +131,7 @@ impl TypeEnv {
     }
 
     pub fn truthify(&mut self, v: &str) {
-        self.guard.write().expect("Not concurrent").truthify(v);
+        self.guard_mut().truthify(v);
         let Some(IdInfo { guard, .. }) = self.identifiers.get(&v.into()) else { return };
         self.truthify_guard(&guard.clone());
     }
@@ -172,7 +172,7 @@ impl TypeEnv {
     }
 
     pub fn falsify(&mut self, v: &str) {
-        self.guard.write().expect("Not concurrent").falsify(v);
+        self.guard_mut().falsify(v);
         let Some(IdInfo { guard, .. }) = self.identifiers.get(&v.into()) else { return };
         self.falsify_guard(&guard.clone());
     }
@@ -293,7 +293,13 @@ impl TypeEnv {
             .extend(errs);
     }
 
-    pub fn substitute_singletons(&self, prop: &Prop, guard: &Guard, seen: &mut HashSet<Identifier>, group_name: bool) -> Prop {
+    pub fn substitute_singletons(
+        &self,
+        prop: &Prop,
+        guard: &Guard,
+        seen: &mut HashSet<Identifier>,
+        group_name: bool
+    ) -> Prop {
         match prop {
             Prop::True | Prop::False => prop.clone(),
             Prop::Var(Symbol::Name(id)) | Prop::Not(Symbol::Name(id)) => {
