@@ -193,7 +193,9 @@ pub fn rms_tc_stmt(
             match type_env.get_mut(name) {
                 None => {}
                 Some(info) => {
-                    info.join_not(&guard.read().expect("Not concurrent"));
+                    if info.type_ != Type::ObjectGroup {
+                        info.join_not(&guard.read().expect("Not concurrent"));
+                    }
                 }
             }
             Ok(())
