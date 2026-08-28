@@ -190,12 +190,10 @@ pub fn rms_tc_stmt(
         }
         AstNode::UnDef((name, _name_span)) => {
             let guard = type_env.guard.clone();
-            match type_env.get_mut(name) {
+            match type_env.get_id_mut(name) {
                 None => {}
                 Some(info) => {
-                    if info.type_ != Type::ObjectGroup {
-                        info.join_not(&guard.read().expect("Not concurrent"));
-                    }
+                    info.join_not(&guard.read().expect("Not concurrent"));
                 }
             }
             Ok(())

@@ -34,6 +34,9 @@ pub struct TypeEnv {
     object_groups: HashMap<Identifier, IdInfo>,
     pub guard: Arc<RwLock<Guard>>,
 
+    pub substitution_cache_id: Arc<RwLock<HashMap<Identifier, Prop>>>,
+    pub substitution_cache_grp: Arc<RwLock<HashMap<Identifier, Prop>>>,
+
     pub errs: HashMap<PathBuf, Vec<RmsError>>,
     
     pub current_ignores: Arc<RwLock<Option<HashSet<u32>>>>,
@@ -60,12 +63,16 @@ impl Drop for TempIgnore {
 pub struct NestedGuard {
     prev_guard: Option<Guard>,
     guard: Arc<RwLock<Guard>>,
+    cache1: Arc<RwLock<HashMap<Identifier, Prop>>>,
+    cache2: Arc<RwLock<HashMap<Identifier, Prop>>>,
 }
 
 impl Drop for NestedGuard {
     fn drop(&mut self) {
         *self.guard.write().expect("Not concurrent") = self.prev_guard.take()
             .expect("Internal Error: No previous guard");
+        self.cache1.write().expect("Not concurrent").clear();
+        self.cache2.write().expect("Not concurrent").clear();
     }
 }
 
@@ -80,6 +87,8 @@ impl TypeEnv {
         NestedGuard {
             prev_guard,
             guard: self.guard.clone(),
+            cache1: self.substitution_cache_id.clone(),
+            cache2: self.substitution_cache_grp.clone(),
         }
     }
 
@@ -88,6 +97,7 @@ impl TypeEnv {
     }
 
     pub fn guard_mut(&self) -> RwLockWriteGuard<'_, Guard> {
+        self.clear_cache();
         self.guard.write().expect("Not concurrent")
     }
 
@@ -187,6 +197,9 @@ impl TypeEnv {
             object_groups: HashMap::new(),
             guard: Arc::new(RwLock::new(Guard::new())),
 
+            substitution_cache_id: Arc::new(RwLock::new(HashMap::new())),
+            substitution_cache_grp: Arc::new(RwLock::new(HashMap::new())),
+
             errs: HashMap::new(),
 
             include_dirs: Arc::new(include_dirs),
@@ -214,11 +227,22 @@ impl TypeEnv {
         TempIgnore { ignores: self.current_ignores.clone() }
     }
 
+    pub fn clear_cache(&self) {
+        self.substitution_cache_grp.write().expect("Not concurrent").clear();
+        self.substitution_cache_id.write().expect("Not concurrent").clear();
+    }
+
     pub fn get_id_mut(&mut self, id: &Identifier) -> Option<&mut IdInfo> {
+        if self.identifiers.contains_key(id) {
+            self.clear_cache();
+        }
         self.identifiers.get_mut(id)
     }
 
     pub fn get_group_mut(&mut self, id: &Identifier) -> Option<&mut IdInfo> {
+        if self.identifiers.contains_key(id) {
+            self.clear_cache();
+        }
         self.object_groups.get_mut(id)
     }
 
@@ -304,6 +328,15 @@ impl TypeEnv {
             Prop::True | Prop::False => prop.clone(),
             Prop::Var(Symbol::Name(id)) | Prop::Not(Symbol::Name(id)) => {
                 let result = 'result: {
+                    let cached_result = if group_name {
+                        self.substitution_cache_grp.read().expect("Not concurrent").get(id).cloned()
+                    } else {
+                        self.substitution_cache_id.read().expect("Not concurrent").get(id).cloned()
+                    };
+                    if let Some(cached_result) = cached_result {
+                        break 'result cached_result;
+                    }
+
                     if !seen.insert(id.clone()) {
                         break 'result Prop::False;
                     }
@@ -323,11 +356,17 @@ impl TypeEnv {
                     };
                     let r = self.substitute_singletons(&info.guard, guard, seen, false);
                     seen.remove(id);
-                    if r.is_singleton() {
+                    let r = if r.is_singleton() {
                         r
                     } else {
                         Prop::Var(Symbol::Name(id.clone()))
+                    };
+                    if group_name {
+                        self.substitution_cache_grp.write().expect("Not Concurrent").insert(id.clone(), r.clone());
+                    } else {
+                        self.substitution_cache_id.write().expect("Not Concurrent").insert(id.clone(), r.clone());
                     }
+                    r
                 };
                 if prop.is_not() {
                     result.not()
@@ -335,21 +374,19 @@ impl TypeEnv {
                     result
                 }
             }
-            Prop::Var(s @ Symbol::Random { .. }) => self.guard().lookup(s),
-            Prop::Not(s @ Symbol::Random { .. }) => self.guard().lookup(s).not(),
+            Prop::Var(s @ Symbol::Random { .. }) => guard.lookup(s),
+            Prop::Not(s @ Symbol::Random { .. }) => guard.lookup(s).not(),
             Prop::And(et) => {
-                let current_guard = self.guard();
                 et.iter()
                     .map(|prop| self.substitute_singletons(prop, guard, seen, false))
                     .collect::<Vec<_>>()
-                    .simplify_and(Some(&current_guard))
+                    .simplify_and(Some(guard))
             }
             Prop::Or(vel) => {
-                let current_guard = self.guard();
                 vel.iter()
                     .map(|prop| self.substitute_singletons(prop, guard, seen, false))
                     .collect::<Vec<_>>()
-                    .simplify_or(Some(&current_guard))
+                    .simplify_or(Some(guard))
             }
         }
     }
