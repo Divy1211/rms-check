@@ -240,7 +240,7 @@ impl TypeEnv {
     }
 
     pub fn get_group_mut(&mut self, id: &Identifier) -> Option<&mut IdInfo> {
-        if self.identifiers.contains_key(id) {
+        if self.object_groups.contains_key(id) {
             self.clear_cache();
         }
         self.object_groups.get_mut(id)
