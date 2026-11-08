@@ -10,7 +10,7 @@ resolver = "2"
 license = "GPL-3"
 version = "0.1.0"
 edition = "2024"
-authors = ["Alian713", "T-West"]
+authors = ["Alian713", "Zetnus", "T-West"]
 
 [workspace.dependencies]
 ariadne = "0.4.1"
