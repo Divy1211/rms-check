@@ -186,4 +186,14 @@ mod test {
     fn test_nested_blocks() {
         test_check_flags("nested_blocks.rms", false, false, 0);
     }
+
+    #[test]
+    fn test_object_group() {
+        test_check_flags("test_object_group.rms", false, false, 0);
+    }
+
+    #[test]
+    fn test_linting_rms() {
+        test_check_flags("linting.rms", false, false, 0);
+    }
 }

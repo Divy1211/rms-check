@@ -1,0 +1,7 @@
+create_object_group CHICKENS {
+    add_object WILD_CHICKEN_A 33
+    add_object WILD_CHICKEN_B 33
+    add_object WILD_CHICKEN_C 34
+}
+create_object CHICKENS {
+}

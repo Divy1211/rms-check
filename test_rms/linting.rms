@@ -1,0 +1,57 @@
+
+
+/* =================================================================================================== */
+<PLAYER_SETUP>
+
+effect_percent MUL_ATTRIBUTE VILLAGER ATTR_LINE_OF_SIGHT 050
+
+
+/* =================================================================================================== */
+<LAND_GENERATION>
+
+
+start_random
+	percent_chance 50
+		#define RIVER_AXIS_X
+	percent_chance 50
+		#define RIVER_AXIS_Y
+end_random
+
+
+if RIVER_AXIS_X
+	#const RIVER_START_X 1
+	#const RIVER_START_Y rnd(33,66)
+	#const RIVER_END_X 99
+	#const RIVER_END_Y (100 - RIVER_START_Y)
+elseif RIVER_AXIS_Y
+	#const RIVER_START_X rnd(33,66)
+	#const RIVER_START_Y 1
+	#const RIVER_END_X (100 - RIVER_START_X)
+	#const RIVER_END_Y 99
+endif
+
+create_land {
+	if RIVER_AXIS_X	land_position (RIVER_START_X + 10) RIVER_START_Y
+	elseif RIVER_AXIS_Y	land_position RIVER_START_X (RIVER_START_Y + 10)
+	endif
+}
+
+/* =================================================================================================== */
+<OBJECTS_GENERATION>
+
+create_object_group HARE_HUNT {
+	add_object HARE_A 50
+	add_object HARE_B 50
+}
+
+start_random 
+	percent_chance 50 #define PUSHABLE_HUNT
+	percent_chance 50 #define UNPUSHABLE_HUNT
+end_random
+
+if PUSHABLE_HUNT	create_object DEER
+elseif UNPUSHABLE_HUNT	create_object HARE_HUNT
+endif
+{
+	number_of_groups 1
+}
