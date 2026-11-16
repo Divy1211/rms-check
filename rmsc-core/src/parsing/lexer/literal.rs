@@ -7,7 +7,7 @@ use crate::parsing::Span;
 pub fn literal<'src>() -> impl Parser<
     'src, &'src str, Token, extra::Err<Rich<'src, char, Span>>
 > {
-    let int = one_of("+-").or_not().then(text::int(10)
+    let int = one_of("+-").or_not().then(one_of("0123456789").repeated().at_least(1)
         .to_slice().from_str::<i64>().unwrapped().then_ignore(
             any()
                 .filter(|c: &char| {
