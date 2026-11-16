@@ -342,7 +342,7 @@ impl TypeEnv {
                         break 'result cached_result;
                     }
 
-                    if !seen.insert(id.clone()) {
+                    if seen.contains(id) {
                         break 'result Prop::False;
                     }
                     if guard.is_true(id) {
@@ -359,6 +359,7 @@ impl TypeEnv {
                     let Some(info) = info else {
                         break 'result Prop::Var(Symbol::Name(id.clone()));
                     };
+                    seen.insert(id.clone());
                     let r = self.substitute_singletons(&info.guard, guard, seen, false);
                     seen.remove(id);
                     let r = if r.is_singleton() {
