@@ -7,9 +7,11 @@ pub use prop::{Prop, Simplifiable};
 pub use guard::Guard;
 
 mod test {
+    #[allow(unused_imports)]
     use std::collections::HashMap;
     #[allow(unused_imports)]
     use std::collections::HashSet;
+    #[allow(unused_imports)]
     use std::sync::{Arc, RwLock};
     #[allow(unused_imports)]
     use super::*;
