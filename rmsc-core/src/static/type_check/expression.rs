@@ -29,6 +29,13 @@ pub fn rms_tc_expr(
             type_env.add_err(path, RmsError::undefined_name(id, span));
             return None;
         };
+        let liveness = if type_ != Type::ObjectGroup {
+            liveness
+        } else if check_liveness {
+            type_env.check_live(id, true)
+        } else {
+            Liveness::Live
+        };
         match liveness {
             Liveness::Live => {}
             Liveness::Dead => {
