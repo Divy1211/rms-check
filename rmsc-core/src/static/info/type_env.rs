@@ -45,6 +45,8 @@ pub struct TypeEnv {
     pub dependencies: Option<HashMap<PathBuf, HashSet<PathBuf>>>,
 
     pub last_block: u32,
+    
+    pub block_info: Arc<RwLock<HashMap<u32, Vec<u32>>>>,
 
     pub skip_includes: bool,
     pub check_dead_paths: bool,
@@ -192,10 +194,11 @@ impl TypeEnv {
     }
     
     pub fn new(include_dirs: Vec<PathBuf>, check_dead_paths: bool, skip_includes: bool) -> Self {
+        let block_info = Arc::new(RwLock::new(HashMap::new()));
         Self {
             identifiers: HashMap::new(),
             object_groups: HashMap::new(),
-            guard: Arc::new(RwLock::new(Guard::new())),
+            guard: Arc::new(RwLock::new(Guard::with(block_info.clone()))),
 
             substitution_cache_id: Arc::new(RwLock::new(HashMap::new())),
             substitution_cache_grp: Arc::new(RwLock::new(HashMap::new())),
@@ -206,9 +209,11 @@ impl TypeEnv {
             dependencies: Some(HashMap::new()),
 
             current_ignores: Arc::new(RwLock::new(None)),
-
+            
             last_block: 0,
 
+            block_info,
+            
             check_dead_paths,
             skip_includes,
         }
@@ -380,13 +385,13 @@ impl TypeEnv {
                 et.iter()
                     .map(|prop| self.substitute_singletons(prop, guard, seen, false))
                     .collect::<Vec<_>>()
-                    .simplify_and(Some(guard))
+                    .simplify_and(guard)
             }
             Prop::Or(vel) => {
                 vel.iter()
                     .map(|prop| self.substitute_singletons(prop, guard, seen, false))
                     .collect::<Vec<_>>()
-                    .simplify_or(Some(guard))
+                    .simplify_or(guard)
             }
         }
     }

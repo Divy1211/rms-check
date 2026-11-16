@@ -7,8 +7,10 @@ pub use prop::{Prop, Simplifiable};
 pub use guard::Guard;
 
 mod test {
+    use std::collections::HashMap;
     #[allow(unused_imports)]
     use std::collections::HashSet;
+    use std::sync::{Arc, RwLock};
     #[allow(unused_imports)]
     use super::*;
 
@@ -251,5 +253,35 @@ mod test {
         guard.truthy_block_arm.insert(1, 2);
 
         assert_eq!(prop.simplify(&guard), a);
+    }
+
+    #[test]
+    fn test_random_and_multiple_complimentary_not() {
+        let p10 = Prop::from_block(1, 0, 50);
+        let p11 = Prop::from_block(1, 1, 50);
+
+        let prop = Prop::Or(vec![!p10 & !p11]);
+
+        let mut block_info = HashMap::with_capacity(1);
+        block_info.insert(1, vec![50, 50]);
+
+        let guard = Guard::with(Arc::new(RwLock::new(block_info)));
+
+        assert_eq!(prop.simplify(&guard), Prop::False);
+    }
+
+    #[test]
+    fn test_random_and_multiple_complimentary_not2() {
+        let p10 = Prop::from_block(1, 0, 25);
+        let p11 = Prop::from_block(1, 1, 25);
+
+        let prop = p10.clone() | p11.clone() | !p10 & !p11;
+
+        let mut block_info = HashMap::with_capacity(1);
+        block_info.insert(1, vec![25, 25]);
+
+        let guard = Guard::with(Arc::new(RwLock::new(block_info)));
+
+        assert_eq!(prop.simplify(&guard), Prop::True);
     }
 }

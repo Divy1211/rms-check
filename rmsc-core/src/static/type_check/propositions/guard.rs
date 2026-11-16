@@ -1,4 +1,5 @@
 use std::collections::{HashMap, HashSet};
+use std::sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 use crate::Identifier;
 use crate::r#static::type_check::propositions::prop::{Prop, Simplifiable};
 use crate::r#static::type_check::propositions::symbol::Symbol;
@@ -13,6 +14,8 @@ pub struct Guard {
     pub current_block: u32,
     pub falsy_block_arms: HashMap<u32, (u32, HashSet<u32>)>,
     pub truthy_block_arm: HashMap<u32, u32>,
+    
+    pub block_info: Arc<RwLock<HashMap<u32, Vec<u32>>>>
 }
 
 impl Default for Guard {
@@ -22,6 +25,27 @@ impl Default for Guard {
 }
 
 impl Guard {
+    pub fn block_info(&self) -> RwLockReadGuard<'_, HashMap<u32, Vec<u32>>> {
+        self.block_info.read().expect("Not concurrent")
+    }
+
+    pub fn block_info_mut(&self) -> RwLockWriteGuard<'_, HashMap<u32, Vec<u32>>> {
+        self.block_info.write().expect("Not concurrent")
+    }
+
+    pub fn with(block_info: Arc<RwLock<HashMap<u32, Vec<u32>>>>) -> Self {
+        Self {
+            truthy: HashMap::new(),
+            falsy: HashMap::new(),
+            block_arm: None,
+            current_block: 0,
+            falsy_block_arms: HashMap::new(),
+            truthy_block_arm: HashMap::new(),
+
+            block_info,
+        }
+    }
+    
     pub fn new() -> Self {
         Self {
             truthy: HashMap::new(),
@@ -30,6 +54,8 @@ impl Guard {
             current_block: 0,
             falsy_block_arms: HashMap::new(),
             truthy_block_arm: HashMap::new(),
+            
+            block_info: Arc::new(RwLock::new(HashMap::new())),
         }
     }
 
@@ -52,6 +78,12 @@ impl Guard {
 
     pub fn in_arm(&mut self, arm: u32, chance: u32) {
         self.block_arm = Some((arm, chance));
+        let mut block_info = self.block_info_mut();
+        let chances = block_info.entry(self.current_block).or_default();
+        if chances.len() != arm as usize {
+            panic!("Internal Error: corrupted block info");
+        }
+        chances.push(chance);
     }
 
     pub fn truthify(&mut self, v: &str) {
@@ -135,6 +167,6 @@ impl Guard {
             et.push(Prop::from_block(self.current_block, arm, chance));
         }
 
-        et.simplify_and(Some(self))
+        et.simplify_and(self)
     }
 }

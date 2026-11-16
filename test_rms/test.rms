@@ -1,16 +1,14 @@
-start_random 
-    percent_chance 50 #define A
-    percent_chance 50 #define B
+start_random
+    percent_chance 20 #define OP1
+    percent_chance 20 #define OP2
 end_random
 
-if A
-    start_random
-        percent_chance 100 #const L 1
-    end_random
+if OP1
+    #const A 10
+elseif OP2
+    #const A 20
 else
-    start_random
-        percent_chance 100 #const L 2
-    end_random
+    #const A 30
 endif
 
-#const P(L)
+create_terrain A {}
